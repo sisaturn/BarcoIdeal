@@ -1,0 +1,307 @@
+---
+/**
+ * Ficha de cada tipo de barco: /barcos/<id>/
+ * Se genera una página por cada tipo de src/data/tiposBarco.ts.
+ * Separa siempre: textos editoriales, ESTIMACIONES ORIENTATIVAS de mercado y DATOS LEGALES verificados.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import IconoBarco from '../../components/IconoBarco.astro';
+import Aviso from '../../components/Aviso.astro';
+import Insignia from '../../components/Insignia.astro';
+import FuenteDato from '../../components/FuenteDato.astro';
+import { LISTA_TIPOS_BARCO, type TipoBarco } from '../../data/tiposBarco';
+import { TITULACIONES } from '../../data/titulaciones';
+import { AVISO_COSTES, TIPOS_AMARRE } from '../../data/costes';
+import { AVISO_AMARRES, FUENTES_AMARRES } from '../../data/amarres';
+import { FUENTES_MANTENIMIENTO } from '../../data/mantenimiento';
+import { SEGURO_LEGAL } from '../../data/seguro';
+import { FUENTES_INSPECCION, INTERMEDIA, PERIODICIDAD } from '../../data/inspeccion';
+import { IEDMT } from '../../data/impuestos';
+import { costeReferencia, notaTitulacion, tablaCostes, usosDelTipo } from '../../lib/fichas';
+import { entradasPorDefecto, textoRango } from '../../lib/calculoCostes';
+import { urlCalculadora } from '../../lib/estado';
+import { num } from '../../lib/formato';
+
+export function getStaticPaths() {
+  return LISTA_TIPOS_BARCO.map((tipo) => ({ params: { tipo: tipo.id }, props: { tipo } }));
+}
+
+interface Props {
+  tipo: TipoBarco;
+}
+const { tipo } = Astro.props;
+const habitual = TITULACIONES[tipo.titulacionHabitual];
+const usos = usosDelTipo(tipo.id);
+const tabla = tablaCostes(tipo);
+const referencia = costeReferencia(tipo);
+const notas = notaTitulacion(tipo);
+const otros = LISTA_TIPOS_BARCO.filter((t) => t.id !== tipo.id);
+const enlaceCalculadora = urlCalculadora(entradasPorDefecto(tipo.id));
+
+// Datos legales aplicados al rango de esloras del tipo (solo reglas verificadas).
+const seguro =
+  tipo.propulsion === 'motor'
+    ? 'Obligatorio: es una embarcación a motor.'
+    : tipo.eslora.min > SEGURO_LEGAL.esloraObligatoriaSinMotor
+      ? 'Obligatorio: mide más de 6 m.'
+      : 'Obligatorio si tiene motor o si mide más de 6 m.';
+const inspeccion = PERIODICIDAD.filter(
+  (r) => r.lista === 7 && tipo.eslora.max >= r.esloraDesde && tipo.eslora.min <= r.esloraHasta,
+).map(
+  (r) =>
+    `Lista 7.ª, ${r.hastaExclusivo ? `menos de ${num(r.esloraHasta)} m` : `de ${num(r.esloraDesde)} a ${num(r.esloraHasta)} m`}: ${r.texto.toLowerCase()}.`,
+);
+const conIntermedia = tipo.eslora.max >= INTERMEDIA.esloraMinima;
+const iedmt =
+  tipo.eslora.max > IEDMT.esloraMayorQue
+    ? tipo.eslora.min > IEDMT.esloraMayorQue
+      ? 'Al matricularlo para uso privado: IEDMT del 12 % del valor (más de 8 m).'
+      : 'Al matricularlo para uso privado: IEDMT del 12 % del valor si mide más de 8 m; hasta 8 m, exento (pero se declara).'
+    : 'IEDMT: exento por medir 8 m o menos (pero se declara).';
+---
+
+<BaseLayout
+  title={`${tipo.nombre}: qué es, para quién y cuánto cuesta`}
+  description={`${tipo.resumen} Titulación necesaria, normativa, ventajas, inconvenientes y coste anual orientativo de un ${tipo.nombre.toLowerCase()} en España.`}
+>
+  <CabeceraPagina
+    titulo={tipo.nombre}
+    antetitulo={`${tipo.propulsion === 'vela' ? 'Vela' : 'Motor'} · ${num(tipo.eslora.min)}–${num(tipo.eslora.max)} m`}
+    subtitulo={tipo.resumen}
+    migas={[{ texto: 'Inicio', href: '/' }, { texto: 'Tipos de barco', href: '/barcos/' }, { texto: tipo.nombre }]}
+  >
+    <div class="hidden size-40 shrink-0 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/15 md:flex lg:size-48">
+      <IconoBarco tipo={tipo.id} class="size-28 lg:size-32" />
+    </div>
+    <div slot="pie" class="mt-7 flex flex-col gap-3 sm:flex-row">
+      <a href={enlaceCalculadora} class="btn-primario">
+        Calcular su coste anual
+      </a>
+      <a href="/test/" class="btn-claro">
+        ¿Es para mí? Haz el test
+      </a>
+    </div>
+  </CabeceraPagina>
+
+  <section class="py-12 sm:py-16">
+    <div class="contenedor grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+      <div class="space-y-10">
+        <div>
+          <h2 class="text-2xl font-extrabold">Qué es y para quién</h2>
+          <p class="mt-3 text-lg leading-relaxed">{tipo.descripcion}</p>
+          {(usos.ideal.length > 0 || usos.evitar.length > 0) && (
+            <div class="mt-5 grid gap-4 sm:grid-cols-2">
+              {usos.ideal.length > 0 && (
+                <div>
+                  <h3 class="text-sm font-bold text-mar-950">Ideal para</h3>
+                  <ul class="mt-2 flex flex-wrap gap-2">
+                    {usos.ideal.map((u) => (
+                      <li class="rounded-full bg-mar-100 px-3 py-1 text-sm font-semibold text-mar-900">{u}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {usos.evitar.length > 0 && (
+                <div>
+                  <h3 class="text-sm font-bold text-mar-950">No es lo suyo</h3>
+                  <ul class="mt-2 flex flex-wrap gap-2">
+                    {usos.evitar.map((u) => (
+                      <li class="rounded-full bg-espuma-100 px-3 py-1 text-sm font-semibold text-espuma-700">{u}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="tarjeta">
+            <h2 class="text-lg font-bold">Ventajas</h2>
+            <ul class="mt-3 space-y-2">
+              {tipo.ventajas.map((v) => (
+                <li class="flex gap-2">
+                  <span class="font-bold text-mar-600" aria-hidden="true">
+                    +
+                  </span>
+                  <span>{v}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div class="tarjeta">
+            <h2 class="text-lg font-bold">Inconvenientes</h2>
+            <ul class="mt-3 space-y-2">
+              {tipo.inconvenientes.map((v) => (
+                <li class="flex gap-2">
+                  <span class="font-bold text-baliza-700" aria-hidden="true">
+                    −
+                  </span>
+                  <span>{v}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div class="tarjeta">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-2xl font-extrabold">Qué dice la normativa</h2>
+            <Insignia tipo="legal" />
+          </div>
+          <h3 class="mt-5 font-bold">Titulación</h3>
+          <ul class="mt-2 space-y-1">
+            {notas.map((n) => (
+              <li>{n}</li>
+            ))}
+          </ul>
+          <h3 class="mt-5 font-bold">Seguro de responsabilidad civil</h3>
+          <p class="mt-1">
+            {seguro} {SEGURO_LEGAL.texto}
+          </p>
+          <h3 class="mt-5 font-bold">Inspección</h3>
+          <ul class="mt-1 space-y-1">
+            {inspeccion.map((i) => (
+              <li>{i}</li>
+            ))}
+            {conIntermedia && <li>{INTERMEDIA.texto}</li>}
+          </ul>
+          <h3 class="mt-5 font-bold">Impuesto de matriculación</h3>
+          <p class="mt-1">{iedmt}</p>
+          <FuenteDato
+            fuentes={[...habitual.fuentes, ...SEGURO_LEGAL.fuentes, ...FUENTES_INSPECCION, ...IEDMT.fuentes]}
+            class="mt-5"
+          />
+        </div>
+
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-2xl font-extrabold">Cuánto cuesta mantenerlo al año</h2>
+            <Insignia tipo="mercado" />
+          </div>
+          <p class="mt-2">
+            Estimación orientativa para {num(tipo.eslora.tipica)} m con lo que podemos calcular sin tus datos (amarre y
+            mantenimiento básico). Faltan seguro, combustible, inspección y tasas: complétalo en la calculadora.
+          </p>
+          <div class="mt-4 overflow-x-auto rounded-xl border border-espuma-200">
+            <table class="w-full min-w-md text-left text-sm">
+              <caption class="sr-only">Coste anual orientativo parcial de{tipo.nombre}según dónde se guarde</caption>
+              <thead class="bg-espuma-100 text-mar-950">
+                <tr>
+                  <th scope="col" class="px-4 py-3 font-bold">
+                    Dónde lo guardas
+                  </th>
+                  <th scope="col" class="px-4 py-3 text-right font-bold">
+                    €/año (sin IVA)
+                  </th>
+                  <th scope="col" class="px-4 py-3 font-bold">
+                    Incluye
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-espuma-200 bg-white">
+                {tabla.map((fila) => (
+                  <tr>
+                    <th scope="row" class="px-4 py-3 font-semibold text-mar-950">
+                      {fila.nombre}
+                    </th>
+                    <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                      {fila.total ? textoRango(fila.total) : 'Sin dato'}
+                    </td>
+                    <td class="px-4 py-3 text-espuma-600">{fila.incluye.join(', ') || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-3 text-sm">
+            <a href={enlaceCalculadora} class="enlace">
+              Completa el cálculo con tus datos
+            </a>{' '}
+            (valor, motor, horas, consumo…).
+          </p>
+          <Aviso titulo="Estimaciones orientativas" class="mt-4">
+            {AVISO_COSTES} {AVISO_AMARRES}
+          </Aviso>
+          <FuenteDato fuentes={[...FUENTES_AMARRES, ...FUENTES_MANTENIMIENTO]} class="mt-4" />
+        </div>
+      </div>
+
+      <aside class="space-y-5 lg:sticky lg:top-24" aria-label="Datos clave">
+        <div class="tarjeta">
+          <h2 class="text-lg font-bold">Datos clave</h2>
+          <dl class="mt-4 space-y-3 text-sm">
+            <div class="flex justify-between gap-4 border-b border-espuma-200 pb-3">
+              <dt class="text-espuma-600">Eslora habitual</dt>
+              <dd class="font-semibold text-mar-950">
+                {num(tipo.eslora.min)}–{num(tipo.eslora.max)} m
+              </dd>
+            </div>
+            <div class="flex justify-between gap-4 border-b border-espuma-200 pb-3">
+              <dt class="text-espuma-600">Personas cómodas</dt>
+              <dd class="text-right font-semibold text-mar-950">{tipo.personasComodas}</dd>
+            </div>
+            <div class="flex justify-between gap-4 border-b border-espuma-200 pb-3">
+              <dt class="text-espuma-600">Titulación habitual</dt>
+              <dd class="text-right font-semibold text-mar-950">
+                <a href={`/titulaciones/${habitual.slug}/`} class="enlace">
+                  {habitual.corto}
+                </a>
+              </dd>
+            </div>
+            <div class="flex justify-between gap-4 border-b border-espuma-200 pb-3">
+              <dt class="text-espuma-600">Precio de segunda mano</dt>
+              <dd class="text-right font-semibold text-espuma-600">
+                {tipo.precioCompra ? `${textoRango(tipo.precioCompra)}` : 'Sin dato verificado'}
+              </dd>
+            </div>
+            <div class="flex justify-between gap-4 border-b border-espuma-200 pb-3">
+              <dt class="text-espuma-600">
+                Coste anual parcial ({TIPOS_AMARRE[referencia.amarre].nombre.toLowerCase()})
+              </dt>
+              <dd class="text-right font-semibold text-mar-950">
+                {referencia.total ? textoRango(referencia.total) : 'Sin dato'}
+              </dd>
+            </div>
+            <div class="flex justify-between gap-4">
+              <dt class="text-espuma-600">Dónde guardarlo</dt>
+              <dd class="text-right font-semibold text-mar-950">
+                {tipo.guardado.map((g) => TIPOS_AMARRE[g].nombre).join(', ')}
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <a
+          href={`${enlaceCalculadora}#comprar-o-alquilar`}
+          class="tarjeta block border-baliza-200 bg-baliza-50 transition hover:-translate-y-0.5 hover:shadow-md"
+        >
+          <span class="block font-bold text-mar-950">¿Comprar o alquilar?</span>
+          <span class="mt-1 block text-sm">Compara con los precios de alquiler de tu zona.</span>
+        </a>
+      </aside>
+    </div>
+  </section>
+
+  <section class="bg-espuma-50 py-12 sm:py-16" aria-labelledby="titulo-otros">
+    <div class="contenedor">
+      <h2 id="titulo-otros" class="text-2xl font-extrabold">
+        Otros tipos de barco
+      </h2>
+      <ul class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {otros.map((t) => (
+          <li>
+            <a
+              href={`/barcos/${t.id}/`}
+              class="tarjeta flex h-full flex-col items-center gap-2 p-4 text-center transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md sm:p-4"
+            >
+              <IconoBarco tipo={t.id} class="size-12 text-mar-700" />
+              <span class="text-sm font-bold text-mar-950">{t.nombre}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

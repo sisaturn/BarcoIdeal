@@ -1,0 +1,160 @@
+---
+/**
+ * POLÍTICA DE PRIVACIDAD — PLANTILLA
+ * Rellena los marcadores entre corchetes. El nombre y el email se toman de src/config.ts.
+ * Revisa el texto con un profesional antes de publicar.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AvisoPlantilla from '../components/AvisoPlantilla.astro';
+import { CONTACT_EMAIL, OWNER_NAME, SITE_NAME, SITE_URL } from '../config';
+---
+
+<BaseLayout
+  title="Política de privacidad"
+  description={`Cómo trata ${SITE_NAME} tus datos personales: qué datos recoge el formulario, para qué, durante cuánto tiempo y cómo ejercer tus derechos. Sin cookies de seguimiento.`}
+>
+  <section class="py-10 sm:py-14">
+    <div class="contenedor">
+      <AvisoPlantilla />
+      <article class="prosa">
+        <h1 class="mb-2 text-3xl font-extrabold sm:text-4xl">Política de privacidad</h1>
+        <p class="text-sm text-espuma-600">Última actualización: [FECHA]</p>
+
+        <p>
+          En {SITE_NAME} ({SITE_URL}) nos tomamos en serio tu privacidad. Aquí te explicamos, de forma clara, qué datos
+          recogemos, para qué los usamos y qué derechos tienes, conforme al Reglamento (UE) 2016/679 (RGPD) y a la Ley
+          Orgánica 3/2018 de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD).
+        </p>
+
+        <h2>1. Responsable del tratamiento</h2>
+        <ul>
+          <li>
+            <strong>Titular:</strong> {OWNER_NAME}
+          </li>
+          <li>
+            <strong>NIF:</strong> [NIF]
+          </li>
+          <li>
+            <strong>Domicilio:</strong> [DIRECCIÓN POSTAL]
+          </li>
+          <li>
+            <strong>Email de contacto:</strong> <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          </li>
+        </ul>
+
+        <h2>2. Qué datos tratamos</h2>
+        <p>Solo tratamos los datos que tú nos facilitas al enviar el formulario de ayuda personalizada:</p>
+        <ul>
+          <li>Nombre y dirección de email.</li>
+          <li>Presupuesto, tipo de barco que buscas, zona de navegación y comentarios.</li>
+          <li>Enlaces a anuncios que nos indiques (opcional).</li>
+          <li>
+            Si decides adjuntarlos, tus respuestas al test y los datos que introdujiste en la calculadora de costes.
+          </li>
+        </ul>
+        <p>No pedimos ni tratamos datos especialmente protegidos.</p>
+
+        <h2>3. Para qué los usamos</h2>
+        <p>
+          Para responder a tu solicitud y enviarte por email una selección de barcos que encajen con lo que buscas. No
+          usamos tus datos para enviarte publicidad ni para elaborar perfiles comerciales, y no tomamos decisiones
+          automatizadas sobre ti.
+        </p>
+
+        <h2>4. Base jurídica</h2>
+        <p>
+          Tu consentimiento, que das al marcar la casilla de aceptación antes de enviar el formulario (art. 6.1.a RGPD),
+          y la aplicación de medidas a petición tuya (art. 6.1.b RGPD). Puedes retirar tu consentimiento en cualquier
+          momento escribiendo a {CONTACT_EMAIL}.
+        </p>
+
+        <h2>5. Cuánto tiempo los conservamos</h2>
+        <p>
+          El tiempo necesario para atender tu solicitud y, como máximo, [PLAZO, p. ej. 12 meses] desde el último
+          contacto, salvo que nos pidas antes que los borremos o que una ley nos obligue a conservarlos.
+        </p>
+
+        <h2>6. Quién más puede acceder a tus datos</h2>
+        <p>
+          No cedemos tus datos a terceros. Para que la web funcione usamos estos proveedores, que actúan como encargados
+          del tratamiento:
+        </p>
+        <ul>
+          <li>
+            <strong>Formspree</strong> (Formspree, Inc., EE. UU.): recibe el formulario y nos lo reenvía por email.
+            [VERIFICAR la garantía para la transferencia internacional: Marco de Privacidad de Datos UE-EE. UU. o
+            cláusulas contractuales tipo.]
+          </li>
+          <li>
+            <strong>Cloudflare</strong> (Cloudflare, Inc.): alojamiento de la web y, si está activada, estadística de
+            visitas sin cookies (Cloudflare Web Analytics). [VERIFICAR la garantía para la transferencia internacional.]
+          </li>
+          <li>
+            <strong>[PROVEEDOR DE EMAIL]</strong>: donde recibimos y respondemos tu solicitud.
+          </li>
+        </ul>
+
+        <h2>7. Tus derechos</h2>
+        <p>
+          Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación del tratamiento y
+          portabilidad escribiendo a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Si consideras que no hemos
+          atendido bien tu petición, puedes reclamar ante la Agencia Española de Protección de Datos (
+          <a href="https://www.aepd.es" rel="noopener">
+            www.aepd.es
+          </a>
+          ).
+        </p>
+
+        <h2 id="cookies">8. Cookies y datos guardados en tu navegador</h2>
+        <p>
+          <strong>Esta web no usa cookies de seguimiento ni de publicidad</strong>, propias ni de terceros. Si está
+          activada, la estadística de visitas de Cloudflare Web Analytics funciona sin cookies y sin identificarte
+          personalmente.
+        </p>
+        <p>
+          Para que no pierdas tu trabajo, el test y la calculadora guardan tus respuestas
+          <strong>solo en tu propio navegador</strong> (almacenamiento local o <em>localStorage</em>). Estos datos no
+          salen de tu dispositivo salvo que decidas adjuntarlos al enviar el formulario. Puedes borrarlos cuando
+          quieras:
+        </p>
+        <p>
+          <button type="button" id="borrar-datos" class="btn-secundario">
+            Borrar mis datos guardados
+          </button>
+          <span id="borrar-datos-estado" role="status" class="ml-3 text-sm font-semibold text-mar-800"></span>
+        </p>
+        <p>
+          [VERIFICAR: si tu proveedor de alojamiento instala alguna cookie técnica estrictamente necesaria para la
+          seguridad del servicio, menciónala aquí.]
+        </p>
+
+        <h2>9. Menores de edad</h2>
+        <p>Esta web no está dirigida a menores de 14 años y no recogemos conscientemente sus datos.</p>
+
+        <h2>10. Cambios en esta política</h2>
+        <p>
+          Si cambiamos esta política, publicaremos la nueva versión en esta misma página indicando la fecha de
+          actualización.
+        </p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // Script empaquetado por Astro (sin define:vars) para que encaje con la CSP.
+  import { STORAGE_PREFIX } from '../config';
+
+  const boton = document.getElementById('borrar-datos');
+  const estado = document.getElementById('borrar-datos-estado');
+  boton?.addEventListener('click', () => {
+    try {
+      Object.keys(localStorage)
+        .filter((k) => k.startsWith(`${STORAGE_PREFIX}:`))
+        .forEach((k) => localStorage.removeItem(k));
+      if (estado) estado.textContent = 'Hecho: hemos borrado los datos guardados en este navegador.';
+    } catch {
+      if (estado) estado.textContent = 'Tu navegador no permite acceder al almacenamiento local: no hay nada guardado.';
+    }
+  });
+</script>

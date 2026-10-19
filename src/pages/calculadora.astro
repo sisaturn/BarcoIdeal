@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Calculadora from '../islands/Calculadora';
+import SistemasAmarre from '../components/SistemasAmarre.astro';
+import { AVISO_COSTES } from '../data/costes';
+---
+
+<BaseLayout
+  title="Calculadora del coste anual de un barco"
+  description="Calcula cuánto cuesta mantener un barco de recreo al año en España con rangos orientativos basados en datos públicos: amarre, seguro, mantenimiento, combustible e inspección."
+>
+  <section class="bg-espuma-50 py-10 sm:py-14">
+    <div class="contenedor">
+      <div class="mb-8 max-w-3xl">
+        <h1 class="text-3xl font-extrabold sm:text-4xl">¿Cuánto cuesta mantener un barco al año?</h1>
+        <p class="mt-3 text-lg">
+          Elige el tipo de barco y sus datos y verás un desglose con rangos orientativos. Si conoces alguna cifra real
+          (el precio de tu puerto, tu seguro…), escríbela en su partida.
+        </p>
+      </div>
+      <Calculadora client:load />
+      <noscript>
+        <p class="mt-6 rounded-xl border border-baliza-300 bg-baliza-50 p-4 text-baliza-800">
+          {AVISO_COSTES} La calculadora necesita JavaScript activado para funcionar.
+        </p>
+      </noscript>
+      <SistemasAmarre />
+    </div>
+  </section>
+</BaseLayout>

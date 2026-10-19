@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Test from '../islands/Test';
+import { PREGUNTAS } from '../data/preguntas';
+---
+
+<BaseLayout
+  title="¿Qué barco me conviene? Test gratuito"
+  description={`Responde ${PREGUNTAS.length} preguntas sobre uso, zona, presupuesto y titulación y descubre qué 2 o 3 tipos de barco de recreo encajan contigo, con su coste anual orientativo.`}
+>
+  <section class="bg-espuma-50 py-10 sm:py-14">
+    <div class="contenedor">
+      <div class="mx-auto mb-8 max-w-2xl text-center">
+        <h1 class="text-3xl font-extrabold sm:text-4xl">¿Qué barco me conviene?</h1>
+        <p class="mt-3 text-lg">
+          {PREGUNTAS.length} preguntas, unos 3 minutos. Al final verás los tipos de barco que mejor encajan contigo y
+          por qué.
+        </p>
+      </div>
+      <Test client:load />
+      <noscript>
+        <p class="mx-auto mt-6 max-w-2xl rounded-xl border border-baliza-300 bg-baliza-50 p-4 text-baliza-800">
+          El test necesita JavaScript activado para funcionar.
+        </p>
+      </noscript>
+    </div>
+  </section>
+</BaseLayout>

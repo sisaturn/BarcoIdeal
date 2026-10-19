@@ -1,0 +1,94 @@
+---
+/**
+ * Explicación de los dos sistemas de tarifa de amarre y ejemplos reales verificados.
+ * PRECIO ORIENTATIVO DE MERCADO: siempre con su aviso y su fuente.
+ */
+import Insignia from './Insignia.astro';
+import FuenteDato from './FuenteDato.astro';
+import { AVISO_AMARRES, EJEMPLOS_AMARRE, FUENTES_AMARRES, RANGOS_AMARRE, SISTEMAS_TARIFA } from '../data/amarres';
+import { FUENTES } from '../data/fuentes';
+import { euros, num } from '../lib/formato';
+---
+
+<section class="mt-12" aria-labelledby="titulo-amarres">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <h2 id="titulo-amarres" class="text-2xl font-extrabold">
+      Cómo se cobra un amarre
+    </h2>
+    <Insignia tipo="mercado" />
+  </div>
+  <p class="mt-2 max-w-3xl">Hay dos sistemas, y conviene saber cuál usa tu puerto antes de comparar precios:</p>
+  <div class="mt-5 grid gap-4 md:grid-cols-2">
+    {SISTEMAS_TARIFA.map((s) => (
+      <div class="tarjeta">
+        <h3 class="text-lg font-bold">{s.nombre}</h3>
+        <p class="mt-1">{s.texto}</p>
+      </div>
+    ))}
+  </div>
+
+  <h3 class="mt-10 text-xl font-bold">Rangos orientativos que usa la calculadora</h3>
+  <div class="mt-3 overflow-x-auto rounded-xl border border-espuma-200">
+    <table class="w-full min-w-md text-left text-sm">
+      <caption class="sr-only">Rangos orientativos de amarre anual por eslora, sin IVA ni tasas</caption>
+      <thead class="bg-espuma-100 text-mar-950">
+        <tr>
+          <th scope="col" class="px-4 py-3 font-bold">
+            Eslora
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold">
+            Zona barata (Atlántico/Cantábrico)
+          </th>
+          <th scope="col" class="px-4 py-3 text-right font-bold">
+            Zona cara (Baleares/Costa Brava)
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-espuma-200 bg-white">
+        {RANGOS_AMARRE.map((r) => (
+          <tr>
+            <th scope="row" class="px-4 py-3 font-semibold text-mar-950">
+              {num(r.eslora)} m
+            </th>
+            <td class="px-4 py-3 text-right tabular-nums">{euros(r.min)}/año</td>
+            <td class="px-4 py-3 text-right tabular-nums">{euros(r.max)}/año</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-2 text-sm text-espuma-600">
+    Marina seca: unos 40 % más barata que en el agua. Remolque en casa: unos 300 €/año (solo hasta ~6 m).
+  </p>
+
+  <h3 class="mt-10 text-xl font-bold">Ejemplos reales (2025-2026)</h3>
+  <ul class="mt-3 grid gap-4 md:grid-cols-2">
+    {EJEMPLOS_AMARRE.map((e) => (
+      <li class="tarjeta">
+        <p class="eyebrow">{e.tipo}</p>
+        <h4 class="mt-1 font-bold text-mar-950">{e.lugar}</h4>
+        {e.precios && (
+          <ul class="mt-2 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+            {e.precios.map((p) => (
+              <li class="flex justify-between gap-2 border-b border-espuma-200 py-0.5">
+                <span>
+                  {num(p.eslora)} m{p.nota ? ` (${p.nota})` : ''}
+                </span>
+                <span class="font-semibold tabular-nums">{euros(p.euros)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {e.texto && <p class="mt-2 text-sm">{e.texto}</p>}
+        <p class="mt-2 text-xs text-espuma-600">
+          {e.condiciones} Fuente: {FUENTES[e.fuente].editor}.
+        </p>
+      </li>
+    ))}
+  </ul>
+
+  <p class="mt-6 rounded-xl border border-baliza-300 bg-baliza-50 p-4 text-sm font-semibold text-baliza-800">
+    {AVISO_AMARRES}
+  </p>
+  <FuenteDato fuentes={FUENTES_AMARRES} class="mt-4" />
+</section>

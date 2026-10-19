@@ -1,0 +1,26 @@
+---
+/**
+ * Ola decorativa para separar secciones. Se coloca al final de una sección oscura;
+ * `color` es la clase de texto con el color de la sección SIGUIENTE (p. ej. text-white).
+ */
+interface Props {
+  color?: string;
+  class?: string;
+}
+const { color = 'text-white', class: clase = '' } = Astro.props;
+---
+
+<svg
+  class:list={['pointer-events-none block h-8 w-full sm:h-12', color, clase]}
+  viewBox="0 0 1440 64"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+  focusable="false"
+>
+  <path
+    fill="currentColor"
+    d="M0 40c120-16 240-24 360-16s240 32 360 32 240-24 360-32 240 0 360 16v24H0z"
+    opacity="0.45"
+  ></path>
+  <path fill="currentColor" d="M0 48c160-20 320-24 480-12s320 28 480 24 320-24 480-28v32H0z"></path>
+</svg>

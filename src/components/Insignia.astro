@@ -1,0 +1,19 @@
+---
+/** Insignia de tipo de dato para páginas estáticas (equivalente a islands/Insignia.tsx). */
+interface Props {
+  tipo: 'legal' | 'mercado' | 'usuario' | 'sinDato';
+  texto?: string;
+}
+const ESTILOS = {
+  legal: { texto: 'Dato legal', clase: 'bg-mar-700 text-white' },
+  mercado: { texto: 'Estimación orientativa', clase: 'bg-baliza-100 text-baliza-800' },
+  usuario: { texto: 'Tu dato', clase: 'bg-mar-100 text-mar-900' },
+  sinDato: { texto: 'Sin dato', clase: 'bg-espuma-200 text-espuma-700' },
+};
+const { tipo, texto } = Astro.props;
+const e = ESTILOS[tipo];
+---
+
+<span class:list={['inline-flex items-center rounded-full px-2 py-0.5 text-xs font-bold whitespace-nowrap', e.clase]}>
+  {texto ?? e.texto}
+</span>

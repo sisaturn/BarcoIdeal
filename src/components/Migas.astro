@@ -1,0 +1,30 @@
+---
+/** Migas de pan ("Inicio › Tipos de barco › Lancha open"). El último elemento es la página actual. */
+interface Props {
+  items: { texto: string; href?: string }[];
+  claro?: boolean;
+}
+const { items, claro = false } = Astro.props;
+---
+
+<nav aria-label="Migas de pan" class:list={['text-sm', claro ? 'text-mar-200' : 'text-espuma-600']}>
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+    {items.map((item, i) => (
+      <li class="flex items-center gap-2">
+        {i > 0 && <span aria-hidden="true">›</span>}
+        {item.href ? (
+          <a
+            href={item.href}
+            class:list={['underline-offset-4 hover:underline', claro ? 'hover:text-white' : 'hover:text-mar-800']}
+          >
+            {item.texto}
+          </a>
+        ) : (
+          <span aria-current="page" class:list={['font-semibold', claro ? 'text-white' : 'text-mar-950']}>
+            {item.texto}
+          </span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>

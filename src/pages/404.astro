@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Página no encontrada" description="Esta página no existe o se ha movido." noindex>
+  <section class="py-20 sm:py-28">
+    <div class="contenedor max-w-2xl text-center">
+      <p class="text-sm font-bold tracking-wide text-baliza-700 uppercase">Error 404</p>
+      <h1 class="mt-2 text-4xl font-extrabold sm:text-5xl">Aquí no hay agua</h1>
+      <p class="mt-4 text-lg">La página que buscas no existe o ha cambiado de sitio. Vuelve a puerto:</p>
+      <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+        <a href="/" class="btn-primario">
+          Ir al inicio
+        </a>
+        <a href="/test/" class="btn-secundario">
+          Hacer el test
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

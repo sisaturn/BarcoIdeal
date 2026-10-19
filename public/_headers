@@ -1,0 +1,30 @@
+# Cabeceras HTTP para Cloudflare Pages
+# https://developers.cloudflare.com/pages/configuration/headers/
+#
+# La política de contenidos principal (CSP) la genera Astro en cada página como <meta>
+# (ver astro.config.mjs). Aquí van las protecciones que solo funcionan como cabecera HTTP.
+
+/*
+  # Solo HTTPS durante un año (también en subdominios, p. ej. las vistas previas de Pages)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # Nadie puede meter esta web dentro de un <iframe> (evita el "clickjacking")
+  Content-Security-Policy: frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self' https://formspree.io; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  # El navegador no "adivina" tipos de archivo (evita ejecutar un archivo como script por error)
+  X-Content-Type-Options: nosniff
+  # Al salir a otra web solo se envía el dominio, nunca la URL completa con tus respuestas
+  Referrer-Policy: strict-origin-when-cross-origin
+  # La web no usa cámara, micrófono, ubicación, pagos ni sensores: los desactivamos
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), browsing-topics=()
+  # Aísla la pestaña de ventanas abiertas por otras webs y de lecturas desde otros orígenes
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+# La imagen para redes sociales sí debe poder cargarse desde otros sitios
+/og-default.png
+  ! Cross-Origin-Resource-Policy
+  Cross-Origin-Resource-Policy: cross-origin
+
+# Los archivos de /_astro llevan un hash en el nombre: se pueden cachear para siempre.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

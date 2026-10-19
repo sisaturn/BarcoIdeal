@@ -1,0 +1,257 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import IconoBarco from '../components/IconoBarco.astro';
+import Ola from '../components/Ola.astro';
+import { HERO, PASOS, TIPOS_SECCION, SOBRE_MI, CTA_FINAL, CIFRAS_PORTADA, GUIAS } from '../data/textos';
+import { LISTA_TIPOS_BARCO } from '../data/tiposBarco';
+import { num } from '../lib/formato';
+
+const iconosGuias = [
+  // Barco
+  'M3 30h41l-3 9H11zM24 30V8m2 2 10 18H26z',
+  // Título / documento
+  'M8 6h22l8 8v28H8zM30 6v8h8M14 22h18M14 28h18M14 34h10',
+  // Balanza comprar/alquilar
+  'M24 6v34M14 40h20M8 14h32M8 14l-5 12a6 6 0 0 0 10 0zM40 14l-5 12a6 6 0 0 0 10 0z',
+];
+---
+
+<BaseLayout description="Test gratuito para saber qué tipo de barco de recreo te conviene y calculadora del coste anual real: amarre, seguro, varada, combustible e impuestos. Para España.">
+  <!-- Portada -->
+  <section class="relative overflow-hidden bg-mar-950 text-white">
+    <div class="fondo-mar pointer-events-none absolute inset-0" aria-hidden="true"></div>
+    <div class="contenedor relative grid items-center gap-10 pt-14 pb-6 sm:pt-20 lg:grid-cols-[1.15fr_0.85fr] lg:pt-24">
+      <div>
+        <p class="eyebrow-claro inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 tracking-[0.1em]">
+          <span class="size-1.5 rounded-full bg-baliza-400" aria-hidden="true"></span>
+          {HERO.antetitulo}
+        </p>
+        <h1 class="mt-5 text-4xl leading-[1.08] font-extrabold text-white sm:text-5xl lg:text-6xl">{HERO.titulo}</h1>
+        <p class="mt-5 max-w-xl text-lg leading-relaxed text-mar-100">{HERO.subtitulo}</p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a href="/test/" class="btn-primario text-lg">
+            {HERO.ctaTest}
+          </a>
+          <a href="/calculadora/" class="btn-claro text-lg">
+            {HERO.ctaCalculadora}
+          </a>
+        </div>
+        <dl class="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-white/15 pt-6">
+          {CIFRAS_PORTADA.map((c) => (
+            <div>
+              <dt class="sr-only">{c.texto}</dt>
+              <dd>
+                <span class="block text-3xl font-extrabold text-white">{c.valor}</span>
+                <span class="block text-sm text-mar-200" aria-hidden="true">
+                  {c.texto}
+                </span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <!-- Ilustración decorativa -->
+      <div class="relative hidden lg:block" aria-hidden="true">
+        <svg viewBox="0 0 400 340" class="w-full">
+          <defs>
+            <radialGradient id="sol" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#fda774"></stop>
+              <stop offset="1" stop-color="#fb8f5a" stop-opacity="0"></stop>
+            </radialGradient>
+          </defs>
+          <circle cx="300" cy="86" r="90" fill="url(#sol)" opacity="0.5"></circle>
+          <circle cx="300" cy="86" r="44" fill="#fb8f5a"></circle>
+          <path d="M40 70h46M58 56h38" stroke="#b9d6ec" stroke-width="5" stroke-linecap="round" opacity="0.35"></path>
+          <g class="balanceo">
+            <path d="M196 40 L196 214 L94 214 Z" fill="#ffffff"></path>
+            <path d="M208 70 L208 214 L292 214 Z" fill="#b9d6ec"></path>
+            <path d="M202 30v190" stroke="#dcebf6" stroke-width="4" stroke-linecap="round"></path>
+            <path d="M66 226 H336 L304 264 H100 Z" fill="#ffffff"></path>
+            <path d="M92 244h208" stroke="#fb8f5a" stroke-width="5"></path>
+          </g>
+          <path d="M0 266 Q50 248 100 266 T200 266 T300 266 T400 266 V340 H0 Z" fill="#255c93"></path>
+          <path d="M0 290 Q50 272 100 290 T200 290 T300 290 T400 290 V340 H0 Z" fill="#1f4a77"></path>
+          <path d="M0 314 Q50 298 100 314 T200 314 T300 314 T400 314 V340 H0 Z" fill="#142e4c"></path>
+        </svg>
+      </div>
+    </div>
+    <Ola color="text-espuma-50" class="mt-8" />
+  </section>
+
+  <!-- Cómo funciona -->
+  <section class="bg-espuma-50 pt-10 pb-16 sm:pb-20" aria-labelledby="titulo-pasos">
+    <div class="contenedor">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Paso a paso</p>
+        <h2 id="titulo-pasos" class="mt-2 text-3xl font-extrabold sm:text-4xl">
+          {PASOS.titulo}
+        </h2>
+        <p class="mt-3 text-lg">{PASOS.subtitulo}</p>
+      </div>
+      <div class="relative mt-10">
+        <!-- Línea que une los pasos en escritorio -->
+        <div
+          class="pointer-events-none absolute top-11 right-[16%] left-[16%] hidden border-t-2 border-dashed border-mar-200 md:block"
+          aria-hidden="true"
+        ></div>
+        <ol class="relative grid gap-5 md:grid-cols-3">
+          {PASOS.lista.map((paso) => (
+            <li class="tarjeta relative flex flex-col hover:-translate-y-0.5 hover:shadow-md">
+              <span
+                class="flex size-11 items-center justify-center rounded-full bg-mar-700 text-lg font-extrabold text-white ring-4 ring-mar-100"
+                aria-hidden="true"
+              >
+                {paso.numero}
+              </span>
+              <h3 class="mt-4 text-xl font-bold">
+                <span class="sr-only">Paso {paso.numero}: </span>
+                {paso.titulo}
+              </h3>
+              <p class="mt-2 flex-1 leading-relaxed">{paso.texto}</p>
+              <a href={paso.enlace.href} class="enlace mt-4 self-start">
+                {paso.enlace.texto} <span aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tipos de barco -->
+  <section class="py-16 sm:py-20" aria-labelledby="titulo-tipos">
+    <div class="contenedor">
+      <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div class="max-w-2xl">
+          <p class="eyebrow">Guía de barcos</p>
+          <h2 id="titulo-tipos" class="mt-2 text-3xl font-extrabold sm:text-4xl">
+            {TIPOS_SECCION.titulo}
+          </h2>
+          <p class="mt-3 text-lg">{TIPOS_SECCION.subtitulo}</p>
+        </div>
+        <a href="/barcos/" class="btn-texto self-start md:self-auto">
+          Ver la comparativa completa →
+        </a>
+      </div>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {LISTA_TIPOS_BARCO.map((tipo) => (
+          <li>
+            <a
+              href={`/barcos/${tipo.id}/`}
+              class="tarjeta group flex h-full flex-col hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md"
+            >
+              <span class="flex size-14 items-center justify-center rounded-2xl bg-mar-50 text-mar-700 transition-colors group-hover:bg-mar-100">
+                <IconoBarco tipo={tipo.id} class="size-11" />
+              </span>
+              <span class="eyebrow mt-4">
+                {tipo.propulsion === 'vela' ? 'Vela' : 'Motor'} · {num(tipo.eslora.min)}–{num(tipo.eslora.max)} m
+              </span>
+              <span class="mt-1 text-lg font-bold text-mar-950 group-hover:underline">{tipo.nombre}</span>
+              <span class="mt-2 flex-1 text-sm leading-relaxed">{tipo.resumen}</span>
+              <span class="mt-3 text-sm font-semibold text-mar-700">
+                Ver ficha <span aria-hidden="true">→</span>
+              </span>
+            </a>
+          </li>
+        ))}
+        <li class="relative flex flex-col justify-center overflow-hidden rounded-2xl bg-mar-700 p-6 text-white">
+          <div class="fondo-mar pointer-events-none absolute inset-0" aria-hidden="true"></div>
+          <h3 class="relative text-lg font-bold text-white">¿No sabes por cuál empezar?</h3>
+          <p class="relative mt-2 text-sm text-mar-100">El test te dice cuáles encajan contigo en 3 minutos.</p>
+          <a href="/test/" class="btn-primario relative mt-4 self-start">
+            Hacer el test
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Guías -->
+  <section class="bg-espuma-50 py-16 sm:py-20" aria-labelledby="titulo-guias">
+    <div class="contenedor">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Guías</p>
+        <h2 id="titulo-guias" class="mt-2 text-3xl font-extrabold sm:text-4xl">
+          {GUIAS.titulo}
+        </h2>
+        <p class="mt-3 text-lg">{GUIAS.subtitulo}</p>
+      </div>
+      <ul class="mt-10 grid gap-5 md:grid-cols-3">
+        {GUIAS.tarjetas.map((g, i) => (
+          <li>
+            <a
+              href={g.href}
+              class="tarjeta group flex h-full flex-col hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md"
+            >
+              <svg
+                class="size-10 text-baliza-500"
+                viewBox="0 0 48 48"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d={iconosGuias[i % iconosGuias.length]} />
+              </svg>
+              <span class="mt-4 text-xl font-bold text-mar-950">{g.titulo}</span>
+              <span class="mt-2 flex-1 leading-relaxed">{g.texto}</span>
+              <span class="mt-4 font-semibold text-mar-700 group-hover:underline">
+                {g.enlace} <span aria-hidden="true">→</span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Sobre mí -->
+  <section class="py-16 sm:py-20" aria-labelledby="titulo-sobre-mi">
+    <div class="contenedor">
+      <div class="grid items-start gap-8 rounded-3xl border border-espuma-200 bg-white p-6 shadow-sm sm:p-10 md:grid-cols-[auto_1fr]">
+        <div
+          class="flex size-28 items-center justify-center rounded-full bg-mar-700 text-3xl font-extrabold text-white ring-8 ring-mar-50 sm:size-36 sm:text-4xl"
+          aria-hidden="true"
+        >
+          {SOBRE_MI.iniciales}
+        </div>
+        <div class="max-w-2xl">
+          <p class="eyebrow">Quién está detrás</p>
+          <h2 id="titulo-sobre-mi" class="mt-2 text-3xl font-extrabold sm:text-4xl">
+            {SOBRE_MI.titulo}
+          </h2>
+          <p class="mt-1 font-semibold text-mar-700">
+            {SOBRE_MI.nombre} · {SOBRE_MI.rol}
+          </p>
+          {SOBRE_MI.parrafos.map((p) => (
+            <p class="mt-4 text-lg leading-relaxed">{p}</p>
+          ))}
+          <a href={SOBRE_MI.enlace.href} class="enlace mt-5 inline-block">
+            {SOBRE_MI.enlace.texto} <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Llamada final -->
+  <section class="pb-4" aria-labelledby="titulo-cta">
+    <div class="contenedor">
+      <div class="relative flex flex-col items-start gap-6 overflow-hidden rounded-3xl bg-mar-950 p-8 text-white sm:p-12 md:flex-row md:items-center md:justify-between">
+        <div class="fondo-mar pointer-events-none absolute inset-0" aria-hidden="true"></div>
+        <div class="relative max-w-xl">
+          <h2 id="titulo-cta" class="text-2xl font-extrabold text-white sm:text-3xl">
+            {CTA_FINAL.titulo}
+          </h2>
+          <p class="mt-2 text-lg text-mar-100">{CTA_FINAL.texto}</p>
+        </div>
+        <a href="/ayuda/" class="btn-primario relative shrink-0 text-lg">
+          {CTA_FINAL.boton}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,28 @@
+---
+/** Icono de un tipo de barco para páginas estáticas. Toma el color del texto (currentColor). */
+import type { IdTipoBarco } from '../data/tiposBarco';
+import { ICONOS_BARCO, OLA } from '../lib/iconosBarco';
+
+interface Props {
+  tipo: IdTipoBarco;
+  class?: string;
+}
+const { tipo, class: clase = 'size-12' } = Astro.props;
+---
+
+<svg
+  class={clase}
+  viewBox="0 0 48 48"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {ICONOS_BARCO[tipo].map((t) => (
+    <path d={t.d} fill={t.relleno ? 'currentColor' : 'none'} fill-opacity={t.relleno ? 0.14 : undefined} />
+  ))}
+  <path d={OLA} stroke-width="1.6" opacity="0.55"></path>
+</svg>

@@ -1,0 +1,111 @@
+---
+/**
+ * /fuentes: todas las fuentes de la web, separadas en normativa oficial (datos legales)
+ * y precios de mercado (estimaciones orientativas). Se genera desde src/data/fuentes.ts.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CabeceraPagina from '../components/CabeceraPagina.astro';
+import Insignia from '../components/Insignia.astro';
+import { FECHA_VERIFICACION, LISTA_FUENTES, type IdFuente } from '../data/fuentes';
+import { CONTACT_EMAIL } from '../config';
+
+/** Qué datos de la web salen de cada fuente. */
+const USO: Record<IdFuente, string> = {
+  rd875: 'Titulaciones',
+  mitmaLicencia: 'Titulaciones',
+  mitmaPnb: 'Titulaciones',
+  mitmaPer: 'Titulaciones',
+  mitmaPy: 'Titulaciones',
+  mitmaCy: 'Titulaciones',
+  rd607: 'Seguro obligatorio',
+  mitmaSeguro: 'Seguro obligatorio',
+  rd1434: 'Inspección',
+  mitmaInspeccion: 'Inspección',
+  ley38: 'Impuestos',
+  dgtV1307: 'Impuestos',
+  rd1435: 'Registro',
+  mitmaAbanderamiento: 'Registro',
+  alcaidesaTarifas: 'Amarres',
+  euskadiPuertos: 'Amarres',
+  portsBalears: 'Amarres',
+  marinaPortIbiza: 'Amarres',
+  mallorcaCom: 'Amarres',
+  araCat: 'Amarres',
+  roams: 'Seguro (precio)',
+  mapfre: 'Seguro (precio)',
+  merca2: 'Mantenimiento',
+  barcheamotore: 'Mantenimiento',
+  alcaidesaVaradero: 'Varada y mano de obra',
+};
+
+const grupos = [
+  {
+    tipo: 'legal' as const,
+    titulo: 'Normativa oficial',
+    texto: 'Datos legales verificados: se muestran en la web como información firme.',
+  },
+  {
+    tipo: 'mercado' as const,
+    titulo: 'Precios de mercado',
+    texto:
+      'Precios públicos de 2025-2026 que la web usa como estimaciones orientativas. Varían según el puerto, la zona y la temporada.',
+  },
+];
+---
+
+<BaseLayout
+  title="Fuentes"
+  description="Fuentes oficiales (BOE, Ministerio de Transportes, DGT) y fuentes de precios de mercado que usa la web, con su fecha de verificación."
+>
+  <CabeceraPagina
+    titulo="Fuentes"
+    antetitulo="Transparencia"
+    subtitulo={`De dónde sale cada dato de la web. Todo verificado en ${FECHA_VERIFICACION}.`}
+    migas={[{ texto: 'Inicio', href: '/' }, { texto: 'Fuentes' }]}
+  />
+
+  <section class="py-12 sm:py-16">
+    <div class="contenedor space-y-14">
+      {grupos.map((g) => (
+        <div>
+          <div class="flex flex-wrap items-center gap-3">
+            <h2 class="text-2xl font-extrabold">{g.titulo}</h2>
+            <Insignia tipo={g.tipo === 'legal' ? 'legal' : 'mercado'} />
+          </div>
+          <p class="mt-2 max-w-3xl">{g.texto}</p>
+          <ul class="mt-6 grid gap-3 md:grid-cols-2">
+            {LISTA_FUENTES.filter((f) => f.tipo === g.tipo).map((f) => (
+              <li class="tarjeta flex flex-col p-4 sm:p-5">
+                <span class="eyebrow">{USO[f.id as IdFuente]}</span>
+                <span class="mt-1 font-bold text-mar-950">{f.nombre}</span>
+                <span class="mt-0.5 text-sm text-espuma-600">{f.editor}</span>
+                <span class="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm">
+                  {f.url ? (
+                    <a href={f.url} target="_blank" rel="noopener noreferrer" class="enlace break-all">
+                      {f.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]}
+                      <span class="sr-only"> (se abre en otra pestaña)</span>
+                    </a>
+                  ) : (
+                    <span class="font-semibold text-baliza-700">Enlace pendiente de añadir</span>
+                  )}
+                  <span class="text-xs text-espuma-600">Verificado: {f.verificado}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+
+      <div class="rounded-2xl border border-espuma-200 bg-espuma-50 p-6">
+        <h2 class="text-xl font-bold">¿Has visto un dato desactualizado?</h2>
+        <p class="mt-2">
+          Las tarifas y la normativa cambian. Si encuentras un error, escríbeme a{' '}
+          <a href={`mailto:${CONTACT_EMAIL}`} class="enlace">
+            {CONTACT_EMAIL}
+          </a>{' '}
+          y lo reviso.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

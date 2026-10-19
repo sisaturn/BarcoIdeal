@@ -1,0 +1,77 @@
+---
+/**
+ * Layout común a todas las páginas: <head> con SEO y Open Graph, cabecera, pie
+ * y el snippet (comentado) de Cloudflare Web Analytics.
+ */
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_NAME, SITE_TAGLINE, DEFAULT_OG_IMAGE, LOCALE } from '../config';
+
+interface Props {
+  /** Título de la página (sin el nombre del sitio). Si se omite, se usa el nombre y el lema. */
+  title?: string;
+  /** Meta descripción: 120–160 caracteres que resuman la página. */
+  description: string;
+  /** Imagen para redes sociales (ruta dentro de /public o URL absoluta). */
+  ogImage?: string;
+  /** true para páginas que no deben aparecer en buscadores (p. ej. la 404). */
+  noindex?: boolean;
+}
+
+const { title, description, ogImage = DEFAULT_OG_IMAGE, noindex = false } = Astro.props;
+
+const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — ${SITE_TAGLINE}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImage, Astro.site);
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0b1d33" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- Open Graph / redes sociales -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content={LOCALE.replace('-', '_')} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!--
+      Cloudflare Web Analytics (sin cookies, respetuoso con la privacidad).
+      Para activarlo: en el panel de Cloudflare → Web Analytics → Add a site, copia tu token,
+      sustituye CF_ANALYTICS_TOKEN y descomenta la línea siguiente.
+      (Alternativa: en Cloudflare Pages → tu proyecto → Metrics → Web Analytics → Enable,
+      que lo inyecta automáticamente sin tocar el código.)
+    -->
+    <!-- <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "CF_ANALYTICS_TOKEN"}'></script> -->
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <a href="#contenido" class="saltar-contenido btn-primario">
+      Saltar al contenido
+    </a>
+    <Header />
+    <main id="contenido" class="flex-1" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

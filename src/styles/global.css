@@ -1,0 +1,209 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/plus-jakarta-sans';
+
+/*
+ * Tema visual. Paleta náutica:
+ *  - mar-*:   azules profundos (marca, textos, fondos oscuros)
+ *  - baliza-*: acento cálido (botones principales, detalles)
+ *  - espuma-*: blancos y grises azulados (fondos claros)
+ * Todas las combinaciones texto/fondo que usamos cumplen contraste AA.
+ */
+@theme {
+  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --color-mar-50: #f0f6fb;
+  --color-mar-100: #dcebf6;
+  --color-mar-200: #b9d6ec;
+  --color-mar-300: #8bb9dd;
+  --color-mar-400: #5794c8;
+  --color-mar-500: #3474b0;
+  --color-mar-600: #255c93;
+  --color-mar-700: #1f4a77;
+  --color-mar-800: #1b3d62;
+  --color-mar-900: #142e4c;
+  --color-mar-950: #0b1d33;
+
+  --color-baliza-50: #fff4ed;
+  --color-baliza-100: #ffe6d5;
+  --color-baliza-200: #fecbaa;
+  --color-baliza-300: #fda774;
+  --color-baliza-400: #fb8f5a;
+  --color-baliza-500: #f26b38;
+  --color-baliza-600: #d9541f;
+  --color-baliza-700: #b4431a;
+  --color-baliza-800: #8f371b;
+
+  --color-espuma-50: #f8fafc;
+  --color-espuma-100: #f1f5f9;
+  --color-espuma-200: #e2e8f0;
+  --color-espuma-300: #cbd5e1;
+  --color-espuma-500: #64748b;
+  --color-espuma-600: #475569;
+  --color-espuma-700: #334155;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-white font-sans text-espuma-700 antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply text-mar-950 tracking-tight text-balance;
+  }
+
+  /* Foco visible y consistente para navegación por teclado */
+  :focus-visible {
+    outline: 3px solid var(--color-baliza-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--color-mar-200);
+    color: var(--color-mar-950);
+  }
+}
+
+/*
+ * Clases reutilizables. Se declaran con @utility para poder combinarlas con @apply
+ * y con variantes (hover:, sm:…).
+ */
+@utility contenedor {
+  @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+}
+
+/* Botones */
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-6 py-2.5 text-base font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primario {
+  @apply btn bg-baliza-400 text-mar-950 shadow-md shadow-baliza-500/25 hover:-translate-y-px hover:bg-baliza-300 hover:shadow-lg hover:shadow-baliza-500/30;
+  transition-property: color, background-color, box-shadow, translate;
+}
+@utility btn-secundario {
+  @apply btn border-2 border-mar-700 bg-white text-mar-800 hover:bg-mar-50;
+}
+@utility btn-claro {
+  @apply btn border-2 border-white/80 text-white hover:bg-white/10;
+}
+@utility btn-texto {
+  @apply inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 font-semibold text-mar-700 underline-offset-4 hover:underline;
+}
+
+@utility enlace {
+  @apply font-semibold text-mar-700 underline decoration-mar-300 decoration-2 underline-offset-4 hover:decoration-mar-700;
+}
+
+@utility tarjeta {
+  @apply rounded-2xl border border-espuma-200 bg-white p-5 shadow-sm shadow-mar-950/5 sm:p-6;
+  transition-property: translate, box-shadow, border-color;
+  transition-duration: 150ms;
+}
+
+/* Antetítulo pequeño en mayúsculas sobre los títulos de sección */
+@utility eyebrow {
+  @apply text-xs font-bold tracking-[0.14em] text-baliza-700 uppercase;
+}
+/* La misma versión para fondos oscuros */
+@utility eyebrow-claro {
+  @apply text-xs font-bold tracking-[0.14em] text-baliza-300 uppercase;
+}
+
+/* Fondo de las secciones oscuras: degradado marino con un brillo suave */
+@utility fondo-mar {
+  background:
+    radial-gradient(ellipse 70% 60% at 85% 0%, rgb(52 116 176 / 0.45), transparent 70%),
+    radial-gradient(ellipse 50% 50% at 0% 100%, rgb(37 92 147 / 0.35), transparent 70%);
+}
+
+/* Balanceo suave del barco de la portada (se desactiva con "reducir movimiento") */
+@utility balanceo {
+  animation: balanceo 7s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 85%;
+}
+
+@utility etiqueta-campo {
+  @apply mb-1.5 block text-sm font-semibold text-mar-950;
+}
+@utility campo {
+  @apply block min-h-11 w-full rounded-lg border border-espuma-300 bg-white px-3 py-2 text-base text-mar-950 placeholder:text-espuma-500 focus:border-mar-500 focus:ring-2 focus:ring-mar-200 focus:outline-none;
+}
+@utility ayuda-campo {
+  @apply mt-1 text-sm text-espuma-600;
+}
+
+/* Texto largo (páginas legales, explicaciones) */
+@layer components {
+  .prosa {
+    @apply max-w-3xl text-base leading-relaxed text-espuma-700;
+  }
+  .prosa h2 {
+    @apply mt-10 mb-3 text-2xl font-bold;
+  }
+  .prosa h3 {
+    @apply mt-6 mb-2 text-lg font-bold;
+  }
+  .prosa p,
+  .prosa ul,
+  .prosa ol {
+    @apply mb-4;
+  }
+  .prosa ul {
+    @apply list-disc pl-6;
+  }
+  .prosa ol {
+    @apply list-decimal pl-6;
+  }
+  .prosa li {
+    @apply mb-1;
+  }
+  .prosa a {
+    @apply enlace;
+  }
+  .prosa strong {
+    @apply text-mar-950;
+  }
+}
+
+/* Texto solo para lectores de pantalla (Tailwind ya trae sr-only; esto es para el salto al contenido). */
+.saltar-contenido {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 100;
+}
+.saltar-contenido:focus {
+  top: 1rem;
+}
+
+@keyframes balanceo {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1.2deg);
+  }
+}

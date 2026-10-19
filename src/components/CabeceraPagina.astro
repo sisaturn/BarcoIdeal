@@ -1,0 +1,35 @@
+---
+/**
+ * Cabecera oscura de las páginas interiores (fichas, titulaciones, seguridad…).
+ * El contenido extra (iconos, botones, datos) va en el slot.
+ */
+import Migas from './Migas.astro';
+import Ola from './Ola.astro';
+
+interface Props {
+  titulo: string;
+  antetitulo?: string;
+  subtitulo?: string;
+  migas?: { texto: string; href?: string }[];
+  /** Color de la sección siguiente, para la ola (clase de texto). */
+  colorSiguiente?: string;
+}
+const { titulo, antetitulo, subtitulo, migas, colorSiguiente = 'text-white' } = Astro.props;
+---
+
+<section class="relative overflow-hidden bg-mar-950 text-white">
+  <div class="fondo-mar pointer-events-none absolute inset-0" aria-hidden="true"></div>
+  <div class="contenedor relative pt-8 pb-10 sm:pt-10 sm:pb-14">
+    {migas && <Migas items={migas} claro />}
+    <div class="mt-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      <div class="max-w-3xl">
+        {antetitulo && <p class="eyebrow-claro">{antetitulo}</p>}
+        <h1 class="mt-2 text-3xl leading-tight font-extrabold text-white sm:text-5xl">{titulo}</h1>
+        {subtitulo && <p class="mt-4 text-lg leading-relaxed text-mar-100">{subtitulo}</p>}
+        <slot name="pie" />
+      </div>
+      <slot />
+    </div>
+  </div>
+  <Ola color={colorSiguiente} />
+</section>

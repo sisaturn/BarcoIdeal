@@ -1,0 +1,82 @@
+---
+import Logo from './Logo.astro';
+import Ola from './Ola.astro';
+import { SITE_NAME, CONTACT_EMAIL } from '../config';
+
+const anio = new Date().getFullYear();
+
+const columnas = [
+  {
+    titulo: 'Herramientas',
+    enlaces: [
+      { href: '/test/', texto: 'Test: ¿qué barco me conviene?' },
+      { href: '/calculadora/', texto: 'Calculadora de coste anual' },
+      { href: '/calculadora/#comprar-o-alquilar', texto: '¿Comprar o alquilar?' },
+      { href: '/ayuda/', texto: 'Ayuda personalizada' },
+    ],
+  },
+  {
+    titulo: 'Guías',
+    enlaces: [
+      { href: '/barcos/', texto: 'Tipos de barco' },
+      { href: '/titulaciones/', texto: 'Titulaciones náuticas' },
+      { href: '/fuentes/', texto: 'Fuentes de los datos' },
+      { href: '/sobre-mi/', texto: 'Sobre mí' },
+    ],
+  },
+  {
+    titulo: 'Legal',
+    enlaces: [
+      { href: '/privacidad/', texto: 'Política de privacidad' },
+      { href: '/aviso-legal/', texto: 'Aviso legal' },
+      { href: '/seguridad/', texto: 'Seguridad' },
+      { href: `mailto:${CONTACT_EMAIL}`, texto: `Contacto: ${CONTACT_EMAIL}` },
+    ],
+  },
+];
+---
+
+<div class="mt-12" aria-hidden="true">
+  <Ola color="text-mar-950" />
+</div>
+<footer class="bg-mar-950 text-mar-100">
+  <div class="contenedor grid gap-10 pt-6 pb-12 md:grid-cols-[1.3fr_1fr_1fr_1fr]">
+    <div>
+      <Logo variante="claro" />
+      <p class="mt-3 max-w-xs text-sm leading-relaxed text-mar-200">
+        Herramientas gratuitas para elegir barco de recreo con cabeza. Las cifras son estimaciones orientativas, no
+        ofertas ni precios cerrados.
+      </p>
+      <p class="mt-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-mar-100">
+        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6L12 3Z"
+          ></path>
+        </svg>
+        Sin cookies de seguimiento
+      </p>
+    </div>
+
+    {columnas.map((c) => (
+      <nav aria-label={c.titulo}>
+        <h2 class="text-sm font-bold tracking-wide text-white uppercase">{c.titulo}</h2>
+        <ul class="mt-3 space-y-1 text-sm">
+          {c.enlaces.map((e) => (
+            <li>
+              <a class="inline-flex min-h-9 items-center break-words hover:text-white hover:underline" href={e.href}>
+                {e.texto}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    ))}
+  </div>
+  <div class="border-t border-white/10">
+    <p class="contenedor py-5 text-xs text-mar-200">
+      {`© ${anio} ${SITE_NAME}.`} Sin afiliación con astilleros, puertos ni portales de anuncios.
+    </p>
+  </div>
+</footer>

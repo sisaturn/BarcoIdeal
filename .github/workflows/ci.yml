@@ -1,0 +1,42 @@
+# Integración continua: en cada push y pull request comprueba que la web compila,
+# pasa los tests (si existen) y no usa dependencias con vulnerabilidades graves conocidas.
+# Cloudflare Pages despliega por su cuenta; esto es una red de seguridad adicional.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Una vez por semana, aunque no haya cambios, para detectar vulnerabilidades nuevas.
+    - cron: '0 6 * * 1'
+
+# Permisos mínimos: el workflow solo puede leer el repositorio.
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Instalar dependencias (exactamente las del package-lock)
+        run: npm ci
+
+      - name: Auditoría de dependencias
+        run: npm audit --audit-level=high
+
+      - name: Tests
+        run: npm test --if-present
+
+      - name: Comprobar tipos y compilar
+        run: npm run build

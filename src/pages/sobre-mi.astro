@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CabeceraPagina from '../components/CabeceraPagina.astro';
+import { SOBRE_MI, SOBRE_MI_PAGINA } from '../data/textos';
+import { CONTACT_EMAIL, SITE_NAME } from '../config';
+---
+
+<BaseLayout
+  title="Sobre mí"
+  description={`${SITE_NAME} es un proyecto personal de ${SOBRE_MI.nombre}, estudiante de Ingeniería Naval en la Universidad Politécnica de Madrid.`}
+>
+  <CabeceraPagina
+    titulo="Sobre mí"
+    antetitulo="Quién está detrás"
+    subtitulo={SOBRE_MI_PAGINA.subtitulo}
+    migas={[{ texto: 'Inicio', href: '/' }, { texto: 'Sobre mí' }]}
+  >
+    <div
+      class="hidden size-36 shrink-0 items-center justify-center rounded-full bg-mar-700 text-4xl font-extrabold text-white ring-8 ring-white/10 md:flex"
+      aria-hidden="true"
+    >
+      {SOBRE_MI.iniciales}
+    </div>
+  </CabeceraPagina>
+
+  <section class="py-12 sm:py-16">
+    <div class="contenedor grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
+      <article class="space-y-10">
+        <div>
+          <p class="text-xl leading-relaxed text-mar-950">{SOBRE_MI_PAGINA.quienSoy}</p>
+          <p class="mt-1 font-semibold text-mar-700">{SOBRE_MI.rol}</p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-extrabold">{SOBRE_MI_PAGINA.porQue.titulo}</h2>
+          <p class="mt-3 text-lg">{SOBRE_MI_PAGINA.porQue.intro}</p>
+          <ol class="mt-4 space-y-3">
+            {SOBRE_MI_PAGINA.porQue.razones.map((r, i) => (
+              <li class="flex gap-4">
+                <span
+                  class="flex size-9 shrink-0 items-center justify-center rounded-full bg-mar-100 font-extrabold text-mar-800"
+                  aria-hidden="true"
+                >
+                  {i + 1}
+                </span>
+                <span class="pt-1 text-lg leading-relaxed">{r}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div class="tarjeta">
+          <h2 class="text-2xl font-extrabold">{SOBRE_MI_PAGINA.queEs.titulo}</h2>
+          <ul class="mt-4 space-y-3">
+            {SOBRE_MI_PAGINA.queEs.puntos.map((p) => (
+              <li class="flex gap-3">
+                <span class="text-mar-600" aria-hidden="true">
+                  ›
+                </span>
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="mt-4 text-sm">
+            Todas las fuentes que uso están en{' '}
+            <a href="/fuentes/" class="enlace">
+              la página de fuentes
+            </a>
+            .
+          </p>
+        </div>
+      </article>
+
+      <aside class="space-y-4 lg:sticky lg:top-24" aria-labelledby="titulo-contacto">
+        <div class="rounded-2xl bg-mar-950 p-6 text-white">
+          <h2 id="titulo-contacto" class="text-xl font-bold text-white">
+            {SOBRE_MI_PAGINA.contacto.titulo}
+          </h2>
+          <p class="mt-2 text-mar-100">{SOBRE_MI_PAGINA.contacto.texto}</p>
+          <a href={`mailto:${CONTACT_EMAIL}`} class="btn-primario mt-5 w-full break-all">
+            {CONTACT_EMAIL}
+          </a>
+        </div>
+        <a href="/ayuda/" class="tarjeta block transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md">
+          <span class="block font-bold text-mar-950">¿Buscas barco?</span>
+          <span class="mt-1 block text-sm">Cuéntame qué necesitas y te envío 5 opciones en 48 horas.</span>
+        </a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

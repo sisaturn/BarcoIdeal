@@ -1,0 +1,147 @@
+---
+/**
+ * Ficha de cada titulación: /titulaciones/<slug>/
+ * Dato legal verificado (RD 875/2014). El coste del curso es un precio de mercado (no una tasa oficial).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import IconoBarco from '../../components/IconoBarco.astro';
+import Aviso from '../../components/Aviso.astro';
+import Insignia from '../../components/Insignia.astro';
+import FuenteDato from '../../components/FuenteDato.astro';
+import { LISTA_TITULACIONES, AVISO_TITULACIONES, alcanceTitulacion, type Titulacion } from '../../data/titulaciones';
+import { barcosParaTitulacion } from '../../lib/fichas';
+import { textoCosteCurso, textoEslora } from '../../lib/textoTitulacion';
+import { num } from '../../lib/formato';
+
+export function getStaticPaths() {
+  return LISTA_TITULACIONES.map((titulacion) => ({ params: { slug: titulacion.slug }, props: { titulacion } }));
+}
+
+interface Props {
+  titulacion: Titulacion;
+}
+const { titulacion: t } = Astro.props;
+const barcos = barcosParaTitulacion(t.id);
+const indice = LISTA_TITULACIONES.findIndex((x) => x.id === t.id);
+const anterior = LISTA_TITULACIONES[indice - 1];
+const siguiente = LISTA_TITULACIONES[indice + 1];
+const curso = textoCosteCurso(t);
+---
+
+<BaseLayout
+  title={`${t.nombre}: qué permite y qué barcos puedes llevar`}
+  description={`${t.nombre}: eslora máxima, distancia, horario y tipos de barco de recreo que permite según el Real Decreto 875/2014.`}
+>
+  <CabeceraPagina
+    titulo={t.nombre}
+    antetitulo={`Titulación · nivel ${t.nivel} de ${LISTA_TITULACIONES.length - 1}`}
+    subtitulo={alcanceTitulacion(t)}
+    migas={[{ texto: 'Inicio', href: '/' }, { texto: 'Titulaciones', href: '/titulaciones/' }, { texto: t.corto }]}
+  >
+    <div class="shrink-0 rounded-2xl bg-white/10 px-6 py-5 text-center ring-1 ring-white/15">
+      <p class="text-sm text-mar-200">Eslora máxima</p>
+      <p class="mt-1 text-2xl font-extrabold text-white">{textoEslora(t)}</p>
+    </div>
+  </CabeceraPagina>
+
+  <section class="py-12 sm:py-16">
+    <div class="contenedor grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+      <div class="space-y-10">
+        <div class="tarjeta">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-2xl font-extrabold">Qué permite</h2>
+            <Insignia tipo="legal" />
+          </div>
+          <ul class="mt-4 space-y-2 text-lg">
+            {t.atribuciones.map((a) => (
+              <li class="flex gap-2">
+                <span class="text-mar-600" aria-hidden="true">
+                  ›
+                </span>
+                <span>{a}</span>
+              </li>
+            ))}
+          </ul>
+          <h3 class="mt-6 text-lg font-bold">Requisitos</h3>
+          <p class="mt-1">
+            {t.requisitos ?? 'No incluidos en nuestros datos verificados: consulta la ficha oficial enlazada abajo.'}
+          </p>
+          <FuenteDato fuentes={t.fuentes} class="mt-5" />
+        </div>
+
+        <div class="tarjeta">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-xl font-bold">Cuánto cuesta el curso</h2>
+            <Insignia tipo="mercado" />
+          </div>
+          <p class="mt-3">
+            {curso
+              ? `Orientativamente, ${curso} en una escuela náutica. Es un precio de mercado, no una tasa oficial: pide presupuesto a escuelas de tu zona.`
+              : t.id === 'ninguna'
+                ? 'No hace falta curso.'
+                : 'Sin dato verificado: pide precio a escuelas náuticas de tu zona.'}
+          </p>
+        </div>
+
+        <div>
+          <h2 class="text-2xl font-extrabold">Qué tipos de barco puedes llevar</h2>
+          {barcos.length === 0 ? (
+            <p class="mt-3">Ninguno de los tipos que comparamos.</p>
+          ) : (
+            <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+              {barcos.map((b) => (
+                <li>
+                  <a
+                    href={`/barcos/${b.tipo.id}/`}
+                    class="tarjeta flex h-full items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md sm:p-4"
+                  >
+                    <IconoBarco tipo={b.tipo.id} class="size-12 shrink-0 text-mar-700" />
+                    <span>
+                      <span class="block font-bold text-mar-950">{b.tipo.nombre}</span>
+                      <span class="block text-sm text-espuma-600">
+                        {b.alcance === 'completo' ? 'Los tamaños habituales' : 'Solo los más pequeños'}
+                        {b.esloraMaxima !== null ? ` (hasta ${num(b.esloraMaxima)} m)` : ''}
+                      </span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+          <p class="mt-3 text-sm text-espuma-600">
+            Clasificación de la web por tipos de barco, a partir de la eslora que permite la titulación.
+          </p>
+        </div>
+
+        <Aviso titulo="Datos verificados" tono="info">
+          {AVISO_TITULACIONES}
+        </Aviso>
+      </div>
+
+      <aside class="space-y-4 lg:sticky lg:top-24" aria-label="Otras titulaciones">
+        {anterior && (
+          <a
+            href={`/titulaciones/${anterior.slug}/`}
+            class="tarjeta block transition hover:border-mar-300 hover:shadow-md"
+          >
+            <span class="block text-sm text-espuma-600">← Nivel anterior</span>
+            <span class="block font-bold text-mar-950">{anterior.nombre}</span>
+          </a>
+        )}
+        {siguiente && (
+          <a
+            href={`/titulaciones/${siguiente.slug}/`}
+            class="tarjeta block transition hover:border-mar-300 hover:shadow-md"
+          >
+            <span class="block text-sm text-espuma-600">Siguiente nivel →</span>
+            <span class="block font-bold text-mar-950">{siguiente.nombre}</span>
+          </a>
+        )}
+        <a href="/titulaciones/" class="btn-texto">
+          Ver todas las titulaciones
+        </a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

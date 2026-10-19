@@ -1,0 +1,112 @@
+---
+/** Cabecera con navegación. Por debajo de 1024 px el menú se despliega con un botón accesible. */
+import Logo from './Logo.astro';
+
+const enlaces = [
+  { href: '/test/', texto: 'Test' },
+  { href: '/calculadora/', texto: 'Calculadora' },
+  { href: '/barcos/', texto: 'Tipos de barco' },
+  { href: '/titulaciones/', texto: 'Titulaciones' },
+];
+const cta = { href: '/ayuda/', texto: 'Ayuda personalizada' };
+
+const rutaActual = Astro.url.pathname.replace(/\/?$/, '/');
+// Una sección está activa en su página y en sus subpáginas (/barcos/lancha-open/ activa "Tipos de barco").
+const activo = (href: string) => rutaActual === href || rutaActual.startsWith(href);
+---
+
+<header class="sticky top-0 z-40 border-b border-espuma-200/80 bg-white/90 backdrop-blur-md">
+  <div class="contenedor flex h-16 items-center justify-between gap-4">
+    <a href="/" class="rounded-md" aria-label="Inicio">
+      <Logo />
+    </a>
+
+    <nav aria-label="Principal" class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {enlaces.map((e) => (
+          <li>
+            <a
+              href={e.href}
+              aria-current={activo(e.href) ? 'page' : undefined}
+              class="relative inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold text-mar-800 transition-colors hover:bg-mar-50 hover:text-mar-950 aria-[current=page]:bg-mar-100 aria-[current=page]:text-mar-950"
+            >
+              {e.texto}
+            </a>
+          </li>
+        ))}
+        <li class="ml-2">
+          <a
+            href={cta.href}
+            aria-current={activo(cta.href) ? 'page' : undefined}
+            class="btn-primario min-h-10 px-5 py-2 text-sm"
+          >
+            {cta.texto}
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <button
+      type="button"
+      id="boton-menu"
+      class="inline-flex size-11 items-center justify-center rounded-full text-mar-900 hover:bg-mar-50 lg:hidden"
+      aria-expanded="false"
+      aria-controls="menu-movil"
+    >
+      <span class="sr-only">Abrir menú</span>
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+      >
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav id="menu-movil" aria-label="Principal (móvil)" class="hidden border-t border-espuma-200 bg-white lg:hidden">
+    <ul class="contenedor flex flex-col gap-1 py-3">
+      {enlaces.map((e) => (
+        <li>
+          <a
+            href={e.href}
+            aria-current={activo(e.href) ? 'page' : undefined}
+            class="flex min-h-12 items-center rounded-lg px-3 font-semibold text-mar-800 hover:bg-mar-50 aria-[current=page]:bg-mar-50 aria-[current=page]:text-mar-950"
+          >
+            {e.texto}
+          </a>
+        </li>
+      ))}
+      <li class="pt-2">
+        <a href={cta.href} class="btn-primario w-full">
+          {cta.texto}
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const boton = document.getElementById('boton-menu');
+  const menu = document.getElementById('menu-movil');
+  if (boton && menu) {
+    const etiqueta = boton.querySelector('.sr-only');
+    const alternar = (abrir: boolean) => {
+      boton.setAttribute('aria-expanded', String(abrir));
+      menu.classList.toggle('hidden', !abrir);
+      if (etiqueta) etiqueta.textContent = abrir ? 'Cerrar menú' : 'Abrir menú';
+    };
+    boton.addEventListener('click', () => alternar(boton.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape' && boton.getAttribute('aria-expanded') === 'true') {
+        alternar(false);
+        boton.focus();
+      }
+    });
+  }
+</script>

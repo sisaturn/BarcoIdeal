@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CabeceraPagina from '../../components/CabeceraPagina.astro';
+import IconoBarco from '../../components/IconoBarco.astro';
+import Aviso from '../../components/Aviso.astro';
+import { LISTA_TIPOS_BARCO } from '../../data/tiposBarco';
+import { TITULACIONES } from '../../data/titulaciones';
+import Insignia from '../../components/Insignia.astro';
+import FuenteDato from '../../components/FuenteDato.astro';
+import { AVISO_COSTES } from '../../data/costes';
+import { AVISO_AMARRES, FUENTES_AMARRES } from '../../data/amarres';
+import { FUENTES_MANTENIMIENTO } from '../../data/mantenimiento';
+import { costeReferencia } from '../../lib/fichas';
+import { textoRango } from '../../lib/calculoCostes';
+import { num } from '../../lib/formato';
+
+const filas = LISTA_TIPOS_BARCO.map((t) => ({ tipo: t, coste: costeReferencia(t) }));
+---
+
+<BaseLayout
+  title="Tipos de barco de recreo: cuál elegir"
+  description="Neumáticas, lanchas, veleros, catamaranes y motos de agua: compara eslora, titulación necesaria y coste anual orientativo de cada tipo de barco."
+>
+  <CabeceraPagina
+    titulo="Tipos de barco de recreo"
+    antetitulo="Guía"
+    subtitulo="Siete familias que cubren casi todo lo que verás en venta. Entra en cada una para ver para quién es, qué titulación pide y cuánto cuesta mantenerla."
+    migas={[{ texto: 'Inicio', href: '/' }, { texto: 'Tipos de barco' }]}
+    colorSiguiente="text-white"
+  />
+
+  <section class="py-12 sm:py-16">
+    <div class="contenedor">
+      <ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {filas.map(({ tipo, coste }) => (
+          <li>
+            <a
+              href={`/barcos/${tipo.id}/`}
+              class="tarjeta group flex h-full gap-4 transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md"
+            >
+              <span class="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-mar-50 text-mar-700 transition-colors group-hover:bg-mar-100">
+                <IconoBarco tipo={tipo.id} class="size-12" />
+              </span>
+              <span class="flex flex-col">
+                <span class="eyebrow">
+                  {tipo.propulsion === 'vela' ? 'Vela' : 'Motor'} · {num(tipo.eslora.min)}–{num(tipo.eslora.max)} m
+                </span>
+                <span class="mt-1 text-lg font-bold text-mar-950 group-hover:underline">{tipo.nombre}</span>
+                <span class="mt-1 text-sm leading-relaxed">{tipo.resumen}</span>
+                <span class="mt-3 text-sm font-semibold text-mar-800">
+                  {coste.total
+                    ? `Amarre y mantenimiento básico: ${textoRango(coste.total)}/año`
+                    : 'Coste anual: sin dato'}
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="mt-16 flex flex-wrap items-center justify-between gap-2">
+        <h2 class="text-2xl font-extrabold">Comparativa rápida</h2>
+        <Insignia tipo="mercado" texto="Costes: estimación orientativa" />
+      </div>
+      <div class="mt-4 overflow-x-auto rounded-xl border border-espuma-200">
+        <table class="w-full min-w-2xl text-left text-sm">
+          <caption class="sr-only">Comparativa de tipos de barco</caption>
+          <thead class="bg-espuma-100 text-mar-950">
+            <tr>
+              <th scope="col" class="px-4 py-3 font-bold">
+                Tipo
+              </th>
+              <th scope="col" class="px-4 py-3 font-bold">
+                Eslora
+              </th>
+              <th scope="col" class="px-4 py-3 font-bold">
+                Personas
+              </th>
+              <th scope="col" class="px-4 py-3 font-bold">
+                Titulación habitual
+              </th>
+              <th scope="col" class="px-4 py-3 text-right font-bold">
+                Coste anual parcial (sin IVA)
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-espuma-200 bg-white">
+            {filas.map(({ tipo, coste }) => (
+              <tr>
+                <th scope="row" class="px-4 py-3 font-semibold">
+                  <a href={`/barcos/${tipo.id}/`} class="enlace">
+                    {tipo.nombre}
+                  </a>
+                </th>
+                <td class="px-4 py-3 whitespace-nowrap">
+                  {num(tipo.eslora.min)}–{num(tipo.eslora.max)} m
+                </td>
+                <td class="px-4 py-3">{tipo.personasComodas}</td>
+                <td class="px-4 py-3">{TITULACIONES[tipo.titulacionHabitual].corto}</td>
+                <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
+                  {coste.total ? textoRango(coste.total) : 'Sin dato'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-2 text-sm text-espuma-600">
+        Coste parcial (amarre y mantenimiento básico) para la eslora típica, guardado de la forma más habitual. Los
+        rangos van de la zona más barata a la más cara. Faltan seguro, combustible, inspección y tasas. No hay precios
+        de compra verificados.
+      </p>
+      <Aviso titulo="Estimaciones orientativas" class="mt-6">
+        {AVISO_COSTES} {AVISO_AMARRES}
+      </Aviso>
+      <FuenteDato fuentes={[...FUENTES_AMARRES, ...FUENTES_MANTENIMIENTO]} class="mt-4" />
+    </div>
+  </section>
+</BaseLayout>

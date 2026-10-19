@@ -1,0 +1,100 @@
+---
+/**
+ * AVISO LEGAL — PLANTILLA (art. 10 de la Ley 34/2002, LSSI-CE)
+ * Rellena los marcadores entre corchetes. El nombre y el email se toman de src/config.ts.
+ * Revisa el texto con un profesional antes de publicar.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AvisoPlantilla from '../components/AvisoPlantilla.astro';
+import { CONTACT_EMAIL, OWNER_NAME, SITE_NAME, SITE_URL } from '../config';
+---
+
+<BaseLayout
+  title="Aviso legal"
+  description={`Información legal sobre ${SITE_NAME}: titular de la web, condiciones de uso, alcance de la información y limitación de responsabilidad.`}
+>
+  <section class="py-10 sm:py-14">
+    <div class="contenedor">
+      <AvisoPlantilla />
+      <article class="prosa">
+        <h1 class="mb-2 text-3xl font-extrabold sm:text-4xl">Aviso legal</h1>
+        <p class="text-sm text-espuma-600">Última actualización: [FECHA]</p>
+
+        <h2>1. Datos del titular</h2>
+        <p>
+          En cumplimiento del artículo 10 de la Ley 34/2002, de Servicios de la Sociedad de la Información y de Comercio
+          Electrónico (LSSI-CE), te informamos de que este sitio web ({SITE_URL}) es titularidad de:
+        </p>
+        <ul>
+          <li>
+            <strong>Nombre:</strong> {OWNER_NAME}
+          </li>
+          <li>
+            <strong>NIF:</strong> [NIF]
+          </li>
+          <li>
+            <strong>Domicilio:</strong> [DIRECCIÓN POSTAL]
+          </li>
+          <li>
+            <strong>Email:</strong> <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          </li>
+          <li>[Si procede: datos de inscripción en el Registro Mercantil o colegio profesional.]</li>
+        </ul>
+
+        <h2>2. Objeto de la web</h2>
+        <p>
+          {SITE_NAME} ofrece herramientas gratuitas y orientativas (un test y una calculadora) para ayudar a quien
+          quiere comprar un barco de recreo a decidir qué tipo le conviene y a estimar su coste anual, así como un
+          servicio de ayuda personalizada a petición del usuario.
+        </p>
+        <p>
+          {SITE_NAME} no vende barcos, no es intermediario en su compraventa y no está afiliado a astilleros, puertos,
+          aseguradoras ni portales de anuncios. No reproduce ni copia anuncios de otros sitios web.
+        </p>
+
+        <h2>3. Alcance de la información</h2>
+        <p>
+          <strong>Toda la información de esta web es orientativa.</strong> Las cifras de la calculadora son estimaciones
+          aproximadas y no constituyen precios, ofertas ni presupuestos. Los resultados del test son una sugerencia
+          basada en reglas sencillas, no un asesoramiento profesional. La información sobre titulaciones náuticas es un
+          resumen y puede no estar actualizada: confírmala siempre con las fuentes oficiales (Dirección General de la
+          Marina Mercante, BOE) o con una escuela náutica.
+        </p>
+        <p>
+          Antes de comprar un barco, te recomendamos pedir presupuestos reales y, si es posible, una inspección por un
+          perito náutico.
+        </p>
+
+        <h2>4. Responsabilidad</h2>
+        <p>
+          El titular no se responsabiliza de las decisiones que el usuario tome basándose en la información de esta web,
+          ni de los daños derivados de errores u omisiones en los contenidos, de la falta de disponibilidad del sitio o
+          de la presencia de virus pese a haber adoptado las medidas razonables para evitarlo.
+        </p>
+        <p>
+          Esta web puede contener enlaces a sitios de terceros (por ejemplo, anuncios que el usuario comparta). El
+          titular no controla esos sitios y no se hace responsable de sus contenidos.
+        </p>
+
+        <h2>5. Propiedad intelectual</h2>
+        <p>
+          Los textos, el diseño y el código de esta web son propiedad del titular o se usan con licencia. No está
+          permitida su reproducción con fines comerciales sin autorización expresa.
+        </p>
+
+        <h2>6. Protección de datos y cookies</h2>
+        <p>
+          El tratamiento de tus datos personales se explica en la <a href="/privacidad/">política de privacidad</a>.
+          Esta web <strong>no utiliza cookies de seguimiento</strong> (más información en la
+          <a href="/privacidad/#cookies">sección de cookies</a>).
+        </p>
+
+        <h2>7. Legislación aplicable</h2>
+        <p>
+          Estas condiciones se rigen por la legislación española. Para cualquier controversia, las partes se someten a
+          los juzgados y tribunales de [CIUDAD], salvo que la normativa de consumidores establezca otro fuero.
+        </p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>

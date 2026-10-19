@@ -6,7 +6,8 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
-import IconoBarco from '../../components/IconoBarco.astro';
+import FotoBarco from '../../components/FotoBarco.astro';
+import CreditoFoto from '../../components/CreditoFoto.astro';
 import Aviso from '../../components/Aviso.astro';
 import Insignia from '../../components/Insignia.astro';
 import FuenteDato from '../../components/FuenteDato.astro';
@@ -70,10 +71,16 @@ const iedmt =
     antetitulo={`${tipo.propulsion === 'vela' ? 'Vela' : 'Motor'} · ${num(tipo.eslora.min)}–${num(tipo.eslora.max)} m`}
     subtitulo={tipo.resumen}
     migas={[{ texto: 'Inicio', href: '/' }, { texto: 'Tipos de barco', href: '/barcos/' }, { texto: tipo.nombre }]}
+    fondo={tipo.id}
   >
-    <div class="hidden size-40 shrink-0 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/15 md:flex lg:size-48">
-      <IconoBarco tipo={tipo.id} class="size-28 lg:size-32" />
-    </div>
+    <figure class="w-full shrink-0 md:w-80 lg:w-96">
+      <div class="aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl ring-4 ring-white/15">
+        <FotoBarco tipo={tipo.id} carga="eager" sizes="(min-width: 1024px) 384px, (min-width: 768px) 320px, 100vw" />
+      </div>
+      <figcaption>
+        <CreditoFoto tipo={tipo.id} class="mt-2 text-mar-100" />
+      </figcaption>
+    </figure>
     <div slot="pie" class="mt-7 flex flex-col gap-3 sm:flex-row">
       <a href={enlaceCalculadora} class="btn-primario">
         Calcular su coste anual
@@ -294,10 +301,17 @@ const iedmt =
           <li>
             <a
               href={`/barcos/${t.id}/`}
-              class="tarjeta flex h-full flex-col items-center gap-2 p-4 text-center transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md sm:p-4"
+              class="tarjeta group flex h-full flex-col overflow-hidden p-0 text-center transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md sm:p-0"
             >
-              <IconoBarco tipo={t.id} class="size-12 text-mar-700" />
-              <span class="text-sm font-bold text-mar-950">{t.nombre}</span>
+              <span class="block aspect-[4/3] overflow-hidden bg-mar-100">
+                <FotoBarco
+                  tipo={t.id}
+                  alt=""
+                  class="transition-transform duration-500 group-hover:scale-105"
+                  sizes="(min-width: 1024px) 180px, (min-width: 640px) 33vw, 50vw"
+                />
+              </span>
+              <span class="p-3 text-sm font-bold text-mar-950">{t.nombre}</span>
             </a>
           </li>
         ))}

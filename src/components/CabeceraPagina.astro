@@ -1,10 +1,15 @@
 ---
 /**
- * Cabecera oscura de las páginas interiores (fichas, titulaciones, seguridad…).
- * El contenido extra (iconos, botones, datos) va en el slot.
+ * Cabecera oscura de las páginas interiores (fichas, titulaciones, seguridad…), con una foto de fondo
+ * oscurecida para que el texto blanco tenga buen contraste.
+ * El contenido extra (botones, datos) va en el slot.
  */
+import { Image } from 'astro:assets';
 import Migas from './Migas.astro';
 import Ola from './Ola.astro';
+import type { IdTipoBarco } from '../data/tiposBarco';
+import { FOTOS_BARCO, FOTO_FONDO } from '../data/fotos';
+import { fotoBarco, fotoFondo } from '../lib/fotos';
 
 interface Props {
   titulo: string;
@@ -13,12 +18,30 @@ interface Props {
   migas?: { texto: string; href?: string }[];
   /** Color de la sección siguiente, para la ola (clase de texto). */
   colorSiguiente?: string;
+  /** Foto de fondo: la de un tipo de barco o, por defecto, la del yate. */
+  fondo?: IdTipoBarco | 'yate';
 }
-const { titulo, antetitulo, subtitulo, migas, colorSiguiente = 'text-white' } = Astro.props;
+const { titulo, antetitulo, subtitulo, migas, colorSiguiente = 'text-white', fondo = 'yate' } = Astro.props;
+const imagen = fondo === 'yate' ? fotoFondo : fotoBarco(fondo);
+const encuadre = fondo === 'yate' ? FOTO_FONDO.encuadre : FOTOS_BARCO[fondo].encuadre;
 ---
 
 <section class="relative overflow-hidden bg-mar-950 text-white">
-  <div class="fondo-mar pointer-events-none absolute inset-0" aria-hidden="true"></div>
+  <Image
+    src={imagen}
+    alt=""
+    widths={[640, 1280, 1920]}
+    sizes="100vw"
+    format="webp"
+    quality={70}
+    loading="eager"
+    class:list={['pointer-events-none absolute inset-0 h-full w-full object-cover', encuadre]}
+  />
+  <!-- Velo oscuro: garantiza el contraste del texto sobre cualquier foto -->
+  <div
+    class="pointer-events-none absolute inset-0 bg-gradient-to-r from-mar-950/95 via-mar-950/85 to-mar-950/55"
+    aria-hidden="true"
+  ></div>
   <div class="contenedor relative pt-8 pb-10 sm:pt-10 sm:pb-14">
     {migas && <Migas items={migas} claro />}
     <div class="mt-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
@@ -31,5 +54,5 @@ const { titulo, antetitulo, subtitulo, migas, colorSiguiente = 'text-white' } = 
       <slot />
     </div>
   </div>
-  <Ola color={colorSiguiente} />
+  <Ola color={colorSiguiente} class="relative" />
 </section>

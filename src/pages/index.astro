@@ -1,6 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import IconoBarco from '../components/IconoBarco.astro';
+import { Image } from 'astro:assets';
+import FotoBarco from '../components/FotoBarco.astro';
+import { FOTO_FONDO } from '../data/fotos';
+import { fotoFondo } from '../lib/fotos';
 import Ola from '../components/Ola.astro';
 import { HERO, PASOS, TIPOS_SECCION, SOBRE_MI, CTA_FINAL, CIFRAS_PORTADA, GUIAS } from '../data/textos';
 import { LISTA_TIPOS_BARCO } from '../data/tiposBarco';
@@ -17,12 +20,26 @@ const iconosGuias = [
 ---
 
 <BaseLayout description="Test gratuito para saber qué tipo de barco de recreo te conviene y calculadora del coste anual real: amarre, seguro, varada, combustible e impuestos. Para España.">
-  <!-- Portada -->
+  <!-- Portada: foto de fondo con velo oscuro para que el texto blanco tenga contraste -->
   <section class="relative overflow-hidden bg-mar-950 text-white">
-    <div class="fondo-mar pointer-events-none absolute inset-0" aria-hidden="true"></div>
-    <div class="contenedor relative grid items-center gap-10 pt-14 pb-6 sm:pt-20 lg:grid-cols-[1.15fr_0.85fr] lg:pt-24">
-      <div>
-        <p class="eyebrow-claro inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 tracking-[0.1em]">
+    <Image
+      src={fotoFondo}
+      alt={FOTO_FONDO.alt}
+      widths={[640, 1024, 1440, 1920]}
+      sizes="100vw"
+      format="webp"
+      quality={72}
+      loading="eager"
+      fetchpriority="high"
+      class:list={['pointer-events-none absolute inset-0 h-full w-full object-cover', FOTO_FONDO.encuadre]}
+    />
+    <div
+      class="pointer-events-none absolute inset-0 bg-gradient-to-b from-mar-950/85 via-mar-950/70 to-mar-950/85 lg:bg-gradient-to-r lg:from-mar-950/95 lg:via-mar-950/70 lg:to-mar-950/10"
+      aria-hidden="true"
+    ></div>
+    <div class="contenedor relative pt-16 pb-10 sm:pt-24 lg:min-h-[36rem] lg:pt-28">
+      <div class="max-w-2xl">
+        <p class="eyebrow-claro inline-flex items-center gap-2 rounded-full bg-mar-950/60 px-3 py-1.5 tracking-[0.1em] backdrop-blur">
           <span class="size-1.5 rounded-full bg-baliza-400" aria-hidden="true"></span>
           {HERO.antetitulo}
         </p>
@@ -32,17 +49,17 @@ const iconosGuias = [
           <a href="/test/" class="btn-primario text-lg">
             {HERO.ctaTest}
           </a>
-          <a href="/calculadora/" class="btn-claro text-lg">
+          <a href="/calculadora/" class="btn-claro text-lg backdrop-blur">
             {HERO.ctaCalculadora}
           </a>
         </div>
-        <dl class="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-white/15 pt-6">
+        <dl class="mt-10 grid max-w-lg grid-cols-3 gap-4 border-t border-white/20 pt-6">
           {CIFRAS_PORTADA.map((c) => (
             <div>
               <dt class="sr-only">{c.texto}</dt>
               <dd>
                 <span class="block text-3xl font-extrabold text-white">{c.valor}</span>
-                <span class="block text-sm text-mar-200" aria-hidden="true">
+                <span class="block text-sm text-mar-100" aria-hidden="true">
                   {c.texto}
                 </span>
               </dd>
@@ -50,33 +67,8 @@ const iconosGuias = [
           ))}
         </dl>
       </div>
-
-      <!-- Ilustración decorativa -->
-      <div class="relative hidden lg:block" aria-hidden="true">
-        <svg viewBox="0 0 400 340" class="w-full">
-          <defs>
-            <radialGradient id="sol" cx="50%" cy="50%" r="50%">
-              <stop offset="0" stop-color="#fda774"></stop>
-              <stop offset="1" stop-color="#fb8f5a" stop-opacity="0"></stop>
-            </radialGradient>
-          </defs>
-          <circle cx="300" cy="86" r="90" fill="url(#sol)" opacity="0.5"></circle>
-          <circle cx="300" cy="86" r="44" fill="#fb8f5a"></circle>
-          <path d="M40 70h46M58 56h38" stroke="#b9d6ec" stroke-width="5" stroke-linecap="round" opacity="0.35"></path>
-          <g class="balanceo">
-            <path d="M196 40 L196 214 L94 214 Z" fill="#ffffff"></path>
-            <path d="M208 70 L208 214 L292 214 Z" fill="#b9d6ec"></path>
-            <path d="M202 30v190" stroke="#dcebf6" stroke-width="4" stroke-linecap="round"></path>
-            <path d="M66 226 H336 L304 264 H100 Z" fill="#ffffff"></path>
-            <path d="M92 244h208" stroke="#fb8f5a" stroke-width="5"></path>
-          </g>
-          <path d="M0 266 Q50 248 100 266 T200 266 T300 266 T400 266 V340 H0 Z" fill="#255c93"></path>
-          <path d="M0 290 Q50 272 100 290 T200 290 T300 290 T400 290 V340 H0 Z" fill="#1f4a77"></path>
-          <path d="M0 314 Q50 298 100 314 T200 314 T300 314 T400 314 V340 H0 Z" fill="#142e4c"></path>
-        </svg>
-      </div>
     </div>
-    <Ola color="text-espuma-50" class="mt-8" />
+    <Ola color="text-espuma-50" class="relative mt-8" />
   </section>
 
   <!-- Cómo funciona -->
@@ -139,18 +131,25 @@ const iconosGuias = [
           <li>
             <a
               href={`/barcos/${tipo.id}/`}
-              class="tarjeta group flex h-full flex-col hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md"
+              class="tarjeta group flex h-full flex-col overflow-hidden p-0 hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md sm:p-0"
             >
-              <span class="flex size-14 items-center justify-center rounded-2xl bg-mar-50 text-mar-700 transition-colors group-hover:bg-mar-100">
-                <IconoBarco tipo={tipo.id} class="size-11" />
+              <span class="block aspect-[4/3] overflow-hidden bg-mar-100">
+                <FotoBarco
+                  tipo={tipo.id}
+                  alt=""
+                  class="transition-transform duration-500 group-hover:scale-105"
+                  sizes="(min-width: 1024px) 280px, (min-width: 640px) 50vw, 100vw"
+                />
               </span>
-              <span class="eyebrow mt-4">
-                {tipo.propulsion === 'vela' ? 'Vela' : 'Motor'} · {num(tipo.eslora.min)}–{num(tipo.eslora.max)} m
-              </span>
-              <span class="mt-1 text-lg font-bold text-mar-950 group-hover:underline">{tipo.nombre}</span>
-              <span class="mt-2 flex-1 text-sm leading-relaxed">{tipo.resumen}</span>
-              <span class="mt-3 text-sm font-semibold text-mar-700">
-                Ver ficha <span aria-hidden="true">→</span>
+              <span class="flex flex-1 flex-col p-5">
+                <span class="eyebrow">
+                  {tipo.propulsion === 'vela' ? 'Vela' : 'Motor'} · {num(tipo.eslora.min)}–{num(tipo.eslora.max)} m
+                </span>
+                <span class="mt-1 text-lg font-bold text-mar-950 group-hover:underline">{tipo.nombre}</span>
+                <span class="mt-2 flex-1 text-sm leading-relaxed">{tipo.resumen}</span>
+                <span class="mt-3 text-sm font-semibold text-mar-700">
+                  Ver ficha <span aria-hidden="true">→</span>
+                </span>
               </span>
             </a>
           </li>

@@ -8,6 +8,9 @@ import CabeceraPagina from '../components/CabeceraPagina.astro';
 import Insignia from '../components/Insignia.astro';
 import { FECHA_VERIFICACION, LISTA_FUENTES, type IdFuente } from '../data/fuentes';
 import { CONTACT_EMAIL } from '../config';
+import FotoBarco from '../components/FotoBarco.astro';
+import { FOTOS_BARCO } from '../data/fotos';
+import { LISTA_TIPOS_BARCO } from '../data/tiposBarco';
 
 /** Qué datos de la web salen de cada fuente. */
 const USO: Record<IdFuente, string> = {
@@ -95,6 +98,51 @@ const grupos = [
           </ul>
         </div>
       ))}
+
+      <div id="fotos" class="scroll-mt-24">
+        <h2 class="text-2xl font-extrabold">Fotografías</h2>
+        <p class="mt-2 max-w-3xl">
+          Las fotos de los tipos de barco son de Wikimedia Commons y tienen licencia libre: se pueden usar citando a su
+          autor y su licencia. La foto del yate de la portada la aporta el autor de la web.
+        </p>
+        <ul class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {LISTA_TIPOS_BARCO.map((t) => {
+            const c = FOTOS_BARCO[t.id];
+            return (
+              <li class="tarjeta flex gap-3 p-3 sm:p-3">
+                <span class="block h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-mar-100">
+                  <FotoBarco tipo={t.id} alt="" sizes="96px" />
+                </span>
+                <span class="text-sm">
+                  <span class="block font-bold text-mar-950">{t.nombre}</span>
+                  <span class="block text-espuma-600">
+                    {c.origen ? (
+                      <a href={c.origen} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">
+                        {c.autor}
+                      </a>
+                    ) : (
+                      c.autor
+                    )}{' '}
+                    ·{' '}
+                    {c.urlLicencia ? (
+                      <a
+                        href={c.urlLicencia}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="underline underline-offset-2"
+                      >
+                        {c.licencia}
+                      </a>
+                    ) : (
+                      c.licencia
+                    )}
+                  </span>
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
 
       <div class="rounded-2xl border border-espuma-200 bg-espuma-50 p-6">
         <h2 class="text-xl font-bold">¿Has visto un dato desactualizado?</h2>

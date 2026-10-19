@@ -2,6 +2,20 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Test from '../islands/Test';
 import { PREGUNTAS } from '../data/preguntas';
+import { getImage } from 'astro:assets';
+import { LISTA_TIPOS_BARCO } from '../data/tiposBarco';
+import { fotoBarco } from '../lib/fotos';
+import type { FotosTest } from '../islands/Test';
+
+// Fotos optimizadas (WebP) para las tarjetas del resultado, que es un componente interactivo.
+const fotos = Object.fromEntries(
+  await Promise.all(
+    LISTA_TIPOS_BARCO.map(async (t) => {
+      const img = await getImage({ src: fotoBarco(t.id), widths: [640, 1100], format: 'webp', quality: 75 });
+      return [t.id, { src: img.src, srcset: img.srcSet.attribute }];
+    }),
+  ),
+) as FotosTest;
 ---
 
 <BaseLayout
@@ -17,7 +31,7 @@ import { PREGUNTAS } from '../data/preguntas';
           por qué.
         </p>
       </div>
-      <Test client:load />
+      <Test client:load fotos={fotos} />
       <noscript>
         <p class="mx-auto mt-6 max-w-2xl rounded-xl border border-baliza-300 bg-baliza-50 p-4 text-baliza-800">
           El test necesita JavaScript activado para funcionar.

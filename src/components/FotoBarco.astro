@@ -1,0 +1,42 @@
+---
+/**
+ * Foto de un tipo de barco, optimizada por Astro (WebP en varios tamaños).
+ * El tamaño y la forma los da el contenedor con clases (p. ej. "aspect-[4/3] w-full").
+ */
+import { Image } from 'astro:assets';
+import type { IdTipoBarco } from '../data/tiposBarco';
+import { FOTOS_BARCO } from '../data/fotos';
+import { fotoBarco } from '../lib/fotos';
+
+interface Props {
+  tipo: IdTipoBarco;
+  class?: string;
+  /** Atributo sizes del srcset (cómo de ancha se ve la foto). */
+  sizes?: string;
+  /** "eager" solo para la foto principal visible al cargar. */
+  carga?: 'lazy' | 'eager';
+  /** Texto alternativo; vacío si la foto es decorativa (p. ej. junto al nombre del barco). */
+  alt?: string;
+}
+
+const {
+  tipo,
+  class: clase = '',
+  sizes = '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw',
+  carga = 'lazy',
+  alt,
+} = Astro.props;
+const credito = FOTOS_BARCO[tipo];
+---
+
+<Image
+  src={fotoBarco(tipo)}
+  alt={alt ?? credito.alt}
+  widths={[400, 800, 1200, 1600]}
+  sizes={sizes}
+  format="webp"
+  quality={78}
+  loading={carga}
+  fetchpriority={carga === 'eager' ? 'high' : undefined}
+  class:list={['h-full w-full object-cover', credito.encuadre, clase]}
+/>

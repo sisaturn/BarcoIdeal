@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
-import IconoBarco from '../../components/IconoBarco.astro';
+import FotoBarco from '../../components/FotoBarco.astro';
 import Aviso from '../../components/Aviso.astro';
 import { LISTA_TIPOS_BARCO } from '../../data/tiposBarco';
 import { TITULACIONES } from '../../data/titulaciones';
@@ -36,12 +36,17 @@ const filas = LISTA_TIPOS_BARCO.map((t) => ({ tipo: t, coste: costeReferencia(t)
           <li>
             <a
               href={`/barcos/${tipo.id}/`}
-              class="tarjeta group flex h-full gap-4 transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md"
+              class="tarjeta group flex h-full flex-col overflow-hidden p-0 transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md sm:p-0"
             >
-              <span class="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-mar-50 text-mar-700 transition-colors group-hover:bg-mar-100">
-                <IconoBarco tipo={tipo.id} class="size-12" />
+              <span class="block aspect-[16/10] overflow-hidden bg-mar-100">
+                <FotoBarco
+                  tipo={tipo.id}
+                  alt=""
+                  class="transition-transform duration-500 group-hover:scale-105"
+                  sizes="(min-width: 1024px) 370px, (min-width: 640px) 50vw, 100vw"
+                />
               </span>
-              <span class="flex flex-col">
+              <span class="flex flex-1 flex-col p-5">
                 <span class="eyebrow">
                   {tipo.propulsion === 'vela' ? 'Vela' : 'Motor'} · {num(tipo.eslora.min)}–{num(tipo.eslora.max)} m
                 </span>

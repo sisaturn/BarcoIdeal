@@ -22,13 +22,17 @@ import { num } from '../lib/formato';
 import { textoRango } from '../lib/calculoCostes';
 import { notaTitulacion } from '../lib/fichas';
 import Aviso from './Aviso';
-import IconoBarco from './IconoBarco';
+import { FOTOS_BARCO } from '../data/fotos';
+import type { IdTipoBarco } from '../data/tiposBarco';
+
+/** Fotos ya optimizadas por Astro (las calcula test.astro y las pasa como propiedad). */
+export type FotosTest = Record<IdTipoBarco, { src: string; srcset: string }>;
 
 const TOTAL = PREGUNTAS.length;
 /** Paso especial que muestra el resultado. */
 const RESULTADO = TOTAL;
 
-export default function Test() {
+export default function Test({ fotos }: { fotos: FotosTest }) {
   const [paso, setPaso] = useState(0);
   const [respuestas, setRespuestas] = useState<Respuestas>({});
   const [guardado, setGuardado] = useState<EstadoTest | null>(null);
@@ -90,7 +94,15 @@ export default function Test() {
   };
 
   if (paso >= RESULTADO && testCompleto(respuestas)) {
-    return <Resultado respuestas={respuestas} tituloRef={tituloRef} onCambiar={() => irA(0)} onReiniciar={reiniciar} />;
+    return (
+      <Resultado
+        respuestas={respuestas}
+        fotos={fotos}
+        tituloRef={tituloRef}
+        onCambiar={() => irA(0)}
+        onReiniciar={reiniciar}
+      />
+    );
   }
 
   const pregunta = PREGUNTAS[Math.min(paso, TOTAL - 1)];
@@ -212,13 +224,14 @@ export default function Test() {
 // ---------------------------------------------------------------------------
 
 interface PropsResultado {
+  fotos: FotosTest;
   respuestas: Respuestas;
   tituloRef: RefObject<HTMLHeadingElement | null>;
   onCambiar: () => void;
   onReiniciar: () => void;
 }
 
-function Resultado({ respuestas, tituloRef, onCambiar, onReiniciar }: PropsResultado) {
+function Resultado({ respuestas, fotos, tituloRef, onCambiar, onReiniciar }: PropsResultado) {
   const recomendaciones = useMemo(() => recomendar(respuestas), [respuestas]);
   const notas = useMemo(() => notasPara(respuestas), [respuestas]);
   const [mensaje, setMensaje] = useState('');
@@ -303,7 +316,7 @@ function Resultado({ respuestas, tituloRef, onCambiar, onReiniciar }: PropsResul
 
       <ol class="mt-8 space-y-6">
         {recomendaciones.map((rec, i) => (
-          <TarjetaRecomendacion key={rec.tipo.id} rec={rec} posicion={i + 1} dias={dias} />
+          <TarjetaRecomendacion key={rec.tipo.id} rec={rec} posicion={i + 1} dias={dias} foto={fotos[rec.tipo.id]} />
         ))}
       </ol>
 
@@ -366,7 +379,17 @@ function Resultado({ respuestas, tituloRef, onCambiar, onReiniciar }: PropsResul
   );
 }
 
-function TarjetaRecomendacion({ rec, posicion, dias }: { rec: Recomendacion; posicion: number; dias?: number }) {
+function TarjetaRecomendacion({
+  rec,
+  posicion,
+  dias,
+  foto,
+}: {
+  rec: Recomendacion;
+  posicion: number;
+  dias?: number;
+  foto?: { src: string; srcset: string };
+}) {
   const { tipo } = rec;
   const encaje = nivelEncaje(rec);
   const colorEncaje =
@@ -381,6 +404,17 @@ function TarjetaRecomendacion({ rec, posicion, dias }: { rec: Recomendacion; pos
 
   return (
     <li class="tarjeta overflow-hidden p-0 sm:p-0" aria-labelledby={idTitulo}>
+      {foto && (
+        <img
+          src={foto.src}
+          srcset={foto.srcset}
+          sizes="(min-width: 1024px) 1100px, 100vw"
+          alt={FOTOS_BARCO[tipo.id].alt}
+          loading="lazy"
+          decoding="async"
+          class={`h-44 w-full object-cover sm:h-60 ${FOTOS_BARCO[tipo.id].encuadre}`}
+        />
+      )}
       <div class="flex flex-wrap items-center gap-3 border-b border-espuma-200 bg-espuma-50 px-5 py-4 sm:px-6">
         <span
           class="flex size-9 items-center justify-center rounded-full bg-mar-700 font-extrabold text-white"
@@ -388,7 +422,6 @@ function TarjetaRecomendacion({ rec, posicion, dias }: { rec: Recomendacion; pos
         >
           {posicion}
         </span>
-        <IconoBarco tipo={tipo.id} class="size-10 text-mar-700" />
         <h3 id={idTitulo} class="text-xl font-extrabold sm:text-2xl">
           <span class="sr-only">Opción {posicion}: </span>
           {tipo.nombre}

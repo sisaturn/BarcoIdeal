@@ -45,26 +45,28 @@ Otros comandos:
 
 ## Dónde se cambia cada cosa
 
-| Quiero cambiar…                               | Archivo                                           |
-| --------------------------------------------- | ------------------------------------------------- |
-| Nombre de la web, email, titular              | `src/config.ts`                                   |
-| URL pública (sitemap, canónicas, Open Graph)  | `astro.config.mjs` → `SITE_URL`                   |
-| Textos de inicio, “Sobre mí”, página de ayuda | `src/data/textos.ts`                              |
-| Tipos de barco (textos, esloras, precios)     | `src/data/tiposBarco.ts`                          |
-| Preguntas del test                            | `src/data/preguntas.ts`                           |
-| Puntuaciones del recomendador                 | `src/data/recomendador.ts`                        |
-| Amarres (precio de mercado)                   | `src/data/amarres.ts`                             |
-| Mantenimiento y combustible (mercado)         | `src/data/mantenimiento.ts`                       |
-| Seguro (legal + mercado)                      | `src/data/seguro.ts`                              |
-| Inspección (legal)                            | `src/data/inspeccion.ts`                          |
-| Impuestos y registro (legal)                  | `src/data/impuestos.ts`                           |
-| Fuentes y fecha de verificación               | `src/data/fuentes.ts`                             |
-| Precios de alquiler y amortización            | `src/data/alquiler.ts`                            |
-| Dominios externos permitidos (CSP)            | `astro.config.mjs` → `security.csp`               |
-| Cabeceras de seguridad y caché                | `public/_headers`                                 |
-| Titulaciones náuticas                         | `src/data/titulaciones.ts`                        |
-| Política de privacidad y aviso legal          | `src/pages/privacidad.astro`, `aviso-legal.astro` |
-| Colores y tipografía                          | `src/styles/global.css` (bloque `@theme`)         |
+| Quiero cambiar…                               | Archivo                                              |
+| --------------------------------------------- | ---------------------------------------------------- |
+| Nombre de la web, email, titular              | `src/config.ts`                                      |
+| URL pública (sitemap, canónicas, Open Graph)  | `astro.config.mjs` → `SITE_URL`                      |
+| Textos de inicio, “Sobre mí”, página de ayuda | `src/data/textos.ts`                                 |
+| Tipos de barco (textos, esloras, precios)     | `src/data/tiposBarco.ts`                             |
+| Preguntas del test                            | `src/data/preguntas.ts`                              |
+| Puntuaciones del recomendador                 | `src/data/recomendador.ts`                           |
+| Amarres (precio de mercado)                   | `src/data/amarres.ts`                                |
+| Mantenimiento y combustible (mercado)         | `src/data/mantenimiento.ts`                          |
+| Seguro (legal + mercado)                      | `src/data/seguro.ts`                                 |
+| Inspección (legal)                            | `src/data/inspeccion.ts`                             |
+| Impuestos y registro (legal)                  | `src/data/impuestos.ts`                              |
+| Fuentes y fecha de verificación               | `src/data/fuentes.ts`                                |
+| Precios de alquiler y amortización            | `src/data/alquiler.ts`                               |
+| Dominios externos permitidos (CSP)            | `astro.config.mjs` → `security.csp`                  |
+| Cabeceras de seguridad y caché                | `public/_headers`                                    |
+| Titulaciones náuticas                         | `src/data/titulaciones.ts`                           |
+| Política de privacidad y aviso legal          | `src/pages/privacidad.astro`, `aviso-legal.astro`    |
+| Fotos de los barcos y sus créditos            | `src/assets/barcos/<tipo>.jpg` y `src/data/fotos.ts` |
+| Foto de fondo de la portada                   | `src/assets/fondo-yate.jpg`                          |
+| Colores y tipografía                          | `src/styles/global.css` (bloque `@theme`)            |
 
 ## Estructura
 

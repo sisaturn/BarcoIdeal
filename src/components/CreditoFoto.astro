@@ -1,0 +1,32 @@
+---
+/** Crédito de una foto con licencia libre: autor, licencia y enlace a su origen. */
+import type { IdTipoBarco } from '../data/tiposBarco';
+import { FOTOS_BARCO } from '../data/fotos';
+
+interface Props {
+  tipo: IdTipoBarco;
+  class?: string;
+}
+const { tipo, class: clase = '' } = Astro.props;
+const c = FOTOS_BARCO[tipo];
+---
+
+<p class:list={['text-xs', clase]}>
+  Foto:{' '}
+  {c.origen ? (
+    <a href={c.origen} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">
+      {c.autor}
+    </a>
+  ) : (
+    c.autor
+  )}
+  ·{' '}
+  {c.urlLicencia ? (
+    <a href={c.urlLicencia} target="_blank" rel="noopener noreferrer" class="underline underline-offset-2">
+      {c.licencia}
+    </a>
+  ) : (
+    c.licencia
+  )}
+  · Wikimedia Commons
+</p>

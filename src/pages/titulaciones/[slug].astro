@@ -5,7 +5,7 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import CabeceraPagina from '../../components/CabeceraPagina.astro';
-import IconoBarco from '../../components/IconoBarco.astro';
+import FotoBarco from '../../components/FotoBarco.astro';
 import Aviso from '../../components/Aviso.astro';
 import Insignia from '../../components/Insignia.astro';
 import FuenteDato from '../../components/FuenteDato.astro';
@@ -94,9 +94,11 @@ const curso = textoCosteCurso(t);
                 <li>
                   <a
                     href={`/barcos/${b.tipo.id}/`}
-                    class="tarjeta flex h-full items-center gap-4 p-4 transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md sm:p-4"
+                    class="tarjeta flex h-full items-center gap-4 p-3 transition hover:-translate-y-0.5 hover:border-mar-300 hover:shadow-md sm:p-3"
                   >
-                    <IconoBarco tipo={b.tipo.id} class="size-12 shrink-0 text-mar-700" />
+                    <span class="block h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-mar-100">
+                      <FotoBarco tipo={b.tipo.id} alt="" sizes="96px" />
+                    </span>
                     <span>
                       <span class="block font-bold text-mar-950">{b.tipo.nombre}</span>
                       <span class="block text-sm text-espuma-600">

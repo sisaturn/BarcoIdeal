@@ -6,7 +6,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_NAME, SITE_TAGLINE, DEFAULT_OG_IMAGE, LOCALE } from '../config';
+import { SITE_NAME, SITE_TAGLINE, DEFAULT_OG_IMAGE, LOCALE, GOOGLE_SITE_VERIFICATION } from '../config';
 
 interface Props {
   /** Título de la página (sin el nombre del sitio). Si se omite, se usa el nombre y el lema. */
@@ -39,6 +39,9 @@ const ogImageUrl = new URL(ogImage, Astro.site);
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0b1d33" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {GOOGLE_SITE_VERIFICATION && <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />}
+    <!-- Datos estructurados que añade cada página (p. ej. la portada) -->
+    <slot name="head" />
 
     <!-- Open Graph / redes sociales -->
     <meta property="og:type" content="website" />

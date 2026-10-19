@@ -8,6 +8,18 @@ import Ola from '../components/Ola.astro';
 import { HERO, PASOS, TIPOS_SECCION, SOBRE_MI, CTA_FINAL, CIFRAS_PORTADA, GUIAS } from '../data/textos';
 import { LISTA_TIPOS_BARCO } from '../data/tiposBarco';
 import { num } from '../lib/formato';
+import { SITE_NAME, SITE_ALTERNATE_NAMES, SITE_TAGLINE } from '../config';
+
+// Datos estructurados (schema.org) para que Google reconozca el nombre del sitio en sus resultados.
+const datosEstructurados = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  alternateName: SITE_ALTERNATE_NAMES,
+  url: new URL('/', Astro.site).toString(),
+  inLanguage: 'es-ES',
+  description: SITE_TAGLINE,
+}).replace(/</g, '\\u003c');
 
 const iconosGuias = [
   // Barco
@@ -20,6 +32,7 @@ const iconosGuias = [
 ---
 
 <BaseLayout description="Test gratuito para saber qué tipo de barco de recreo te conviene y calculadora del coste anual real: amarre, seguro, varada, combustible e impuestos. Para España.">
+  <script type="application/ld+json" slot="head" set:html={datosEstructurados} />
   <!-- Portada: foto de fondo con velo oscuro para que el texto blanco tenga contraste -->
   <section class="relative overflow-hidden bg-mar-950 text-white">
     <Image

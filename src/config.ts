@@ -35,5 +35,15 @@ export const STORAGE_PREFIX = 'barcoideal';
 /** Imagen por defecto para Open Graph (redes sociales). Está en /public. */
 export const DEFAULT_OG_IMAGE = '/og-default.png';
 
+/**
+ * Código de verificación de Google Search Console (método «Etiqueta HTML»).
+ * Pega aquí SOLO el valor de content="…" que te da Google y vuelve a desplegar.
+ * Mientras esté vacío no se añade nada a la web.
+ */
+export const GOOGLE_SITE_VERIFICATION = '';
+
+/** Otras formas de escribir el nombre, para que Google asocie las búsquedas a la web. */
+export const SITE_ALTERNATE_NAMES = ['barcoideal', 'Barco Ideal'];
+
 /** Locale para Open Graph y formato de números. */
 export const LOCALE = 'es-ES';

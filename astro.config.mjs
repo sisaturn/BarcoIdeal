@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 // URL pública del sitio. Cámbiala cuando sepas la definitiva: la que te asigne Cloudflare Pages
 // (https://<nombre-del-proyecto>.pages.dev) o tu dominio propio. Se usa para el sitemap,
 // robots.txt, las URL canónicas y Open Graph. Este es el único sitio donde hay que cambiarla.
-const SITE_URL = 'https://barcoideal.aalvaroalonsoalejos.workers.dev';
+const SITE_URL = 'https://barcoideal.pages.dev';
 
 export default defineConfig({
   site: SITE_URL,

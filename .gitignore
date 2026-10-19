@@ -17,3 +17,6 @@ npm-debug.log*
 Thumbs.db
 .vscode/*
 !.vscode/extensions.json
+
+# caché local de wrangler (Cloudflare)
+.wrangler/

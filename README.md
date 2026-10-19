@@ -94,31 +94,29 @@ public/                 favicon, imagen OG, _headers de Cloudflare
 Mientras no esté configurado, el formulario muestra un aviso de “modo prototipo” y no envía nada.
 Revisa los límites del plan gratuito de Formspree.
 
-## Desplegar en Cloudflare Pages desde GitHub
+## Desplegar en Cloudflare desde GitHub
 
-1. Crea un repositorio vacío en GitHub (sin README), por ejemplo `barcoideal`.
-2. Sube el código:
-   ```bash
-   git add .
-   git commit -m "Primer prototipo de BarcoIdeal"
-   git branch -M main
-   git remote add origin https://github.com/TU_USUARIO/barcoideal.git
-   git push -u origin main
-   ```
-3. En el panel de Cloudflare: **Workers & Pages → Create → Pages → Connect to Git**. Autoriza GitHub y elige el repositorio.
-4. Configuración de la build:
-   - Framework preset: **Astro**
+El repositorio ya está en GitHub (`sisaturn/BarcoIdeal`). El despliegue usa **Cloudflare Workers con archivos
+estáticos**: el archivo `wrangler.jsonc` le dice a Cloudflare que solo publique la carpeta `dist`.
+
+1. En el panel de Cloudflare: **Workers & Pages → Create → Import a repository** (o el proyecto `barcoideal`
+   que ya tienes) y elige `sisaturn/BarcoIdeal`.
+2. Configuración de la build:
    - Build command: `npm run build`
-   - Build output directory: `dist`
+   - Deploy command: `npx wrangler deploy`
    - Root directory: vacío
-5. **Environment variables** (Production y Preview): `PUBLIC_FORMSPREE_ENDPOINT = https://formspree.io/f/xxxxxxxx`.
-   La versión de Node se toma del archivo `.node-version` (24); si hiciera falta, añade también `NODE_VERSION = 24`.
-6. **Save and Deploy.** Al terminar tendrás una URL `https://<proyecto>.pages.dev`.
-7. Si esa URL no es `https://barcoideal.pages.dev`, cámbiala en `astro.config.mjs` (`SITE_URL`), haz commit y push: cada push a `main` vuelve a desplegar solo.
-8. Opcional:
-   - **Dominio propio:** pestaña _Custom domains_ del proyecto (y actualiza `SITE_URL`).
-   - **Analítica sin cookies:** _Metrics → Web Analytics → Enable_, o descomenta el snippet de `src/layouts/BaseLayout.astro` y pon tu token en lugar de `CF_ANALYTICS_TOKEN`.
+3. **Variables de la build** (_Settings → Build → Variables and secrets_):
+   `PUBLIC_FORMSPREE_ENDPOINT = https://formspree.io/f/xxxxxxxx`. La versión de Node se toma de `.node-version`.
+4. Al desplegar tendrás una URL `https://barcoideal.<tu-subdominio>.workers.dev`. Pon esa URL (o tu dominio propio)
+   en `astro.config.mjs` (`SITE_URL`), haz commit y push: cada push a `main` vuelve a desplegar solo.
+5. Opcional:
+   - **Dominio propio:** _Settings → Domains & Routes_ del proyecto (y actualiza `SITE_URL`).
+   - **Analítica sin cookies:** Web Analytics en el panel de Cloudflare, o descomenta el snippet de
+     `src/layouts/BaseLayout.astro` y pon tu token en lugar de `CF_ANALYTICS_TOKEN`.
 
+> No añadas el adaptador `@astrojs/cloudflare`: la web es estática y no lo necesita. Si Cloudflare propone
+> configurarlo, es que falta `wrangler.jsonc` en el repositorio.
+>
 > Las variables `PUBLIC_*` se incrustan al compilar: si cambias el endpoint de Formspree, vuelve a desplegar.
 
 ## Aviso

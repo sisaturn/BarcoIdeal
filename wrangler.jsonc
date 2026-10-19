@@ -1,0 +1,16 @@
+// Configuración de despliegue en Cloudflare (Workers con archivos estáticos).
+// La web es 100 % estática: Cloudflare solo tiene que publicar la carpeta dist que genera
+// `npm run build`. Con este archivo, `wrangler deploy` no intenta convertir el proyecto en una
+// aplicación con servidor (no hace falta el adaptador @astrojs/cloudflare).
+{
+  // Debe coincidir con el nombre del proyecto en el panel de Cloudflare.
+  "name": "barcoideal",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Las rutas que no existen muestran dist/404.html con código 404.
+    "not_found_handling": "404-page",
+    // /test y /test/ sirven dist/test/index.html.
+    "html_handling": "auto-trailing-slash",
+  },
+}

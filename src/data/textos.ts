@@ -53,12 +53,12 @@ export const TIPOS_SECCION = {
  */
 export const SOBRE_MI = {
   titulo: 'Sobre mí',
-  nombre: 'Álvaro Alonso',
+  nombre: 'Álvaro Alonso Alejos',
   iniciales: 'AA',
   rol: 'Estudiante de Ingeniería Naval · Universidad Politécnica de Madrid',
   /** Versión corta para la portada. La página completa está en /sobre-mi/. */
   parrafos: [
-    'Soy Álvaro Alonso y estudio Ingeniería Naval en la Universidad Politécnica de Madrid. BarcoIdeal es un proyecto personal de estudiante, no una empresa.',
+    'Soy Álvaro Alonso Alejos y estudio Ingeniería Naval en la Universidad Politécnica de Madrid. BarcoIdeal es un proyecto personal de estudiante, no una empresa.',
     'Lo he creado para conocer el sector náutico más allá de lo que veo en clase, conectar con profesionales y aficionados, y echar una mano a quien se plantea comprar su primer barco. Los costes que verás son estimaciones orientativas basadas en datos públicos.',
   ],
   enlace: { texto: 'Conóceme un poco más', href: '/sobre-mi/' },
@@ -67,7 +67,7 @@ export const SOBRE_MI = {
 /** Página /sobre-mi/ (versión completa). */
 export const SOBRE_MI_PAGINA = {
   subtitulo: 'Un proyecto personal de un estudiante de Ingeniería Naval.',
-  quienSoy: 'Me llamo Álvaro Alonso y estudio Ingeniería Naval en la Universidad Politécnica de Madrid.',
+  quienSoy: 'Me llamo Álvaro Alonso Alejos y estudio Ingeniería Naval en la Universidad Politécnica de Madrid.',
   porQue: {
     titulo: 'Por qué he hecho esta web',
     intro: 'BarcoIdeal nace de tres ganas:',

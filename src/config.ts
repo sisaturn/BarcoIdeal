@@ -19,7 +19,7 @@ export const SITE_URL: string = (import.meta.env.SITE ?? '').replace(/\/$/, '');
 export const CONTACT_EMAIL = 'barcoideal97@gmail.com';
 
 /** Nombre del titular de la web (aparece en las páginas legales). */
-export const OWNER_NAME = 'Álvaro Alonso';
+export const OWNER_NAME = 'Álvaro Alonso Alejos';
 
 /**
  * Endpoint de Formspree para el formulario de ayuda personalizada.

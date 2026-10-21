@@ -48,7 +48,7 @@ export const GOOGLE_SITE_VERIFICATION = '';
  * Vacío = Clarity desactivado y sin aviso de cookies. También se puede dar con la variable de entorno
  * PUBLIC_CLARITY_PROJECT_ID (Cloudflare Pages → Settings → Variables).
  */
-export const CLARITY_PROJECT_ID: string = (import.meta.env.PUBLIC_CLARITY_PROJECT_ID ?? '').trim() || '';
+export const CLARITY_PROJECT_ID: string = (import.meta.env.PUBLIC_CLARITY_PROJECT_ID ?? '').trim() || 'z14v0veg7r';
 
 /** Otras formas de escribir el nombre, para que Google asocie las búsquedas a la web. */
 export const SITE_ALTERNATE_NAMES = ['barcoideal', 'Barco Ideal'];

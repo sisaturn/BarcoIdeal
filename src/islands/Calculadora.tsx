@@ -17,7 +17,8 @@ import {
 } from '../data/costes';
 import { AVISO_AMARRES, FUENTES_AMARRES, REMOLQUE } from '../data/amarres';
 import { FECHA_VERIFICACION_PUERTOS, PUERTOS, puertoPorId, tarifaPuertoPara, type Puerto } from '../data/puertos';
-import { FUENTES_MANTENIMIENTO, COMBUSTIBLE } from '../data/mantenimiento';
+import { FUENTES_MANTENIMIENTO, FUENTES_MOTOR, COMBUSTIBLE } from '../data/mantenimiento';
+import InfoMotor from './InfoMotor';
 import { FUENTES, type IdFuente } from '../data/fuentes';
 import { DIAS_POR_RESPUESTA } from '../data/preguntas';
 import {
@@ -226,8 +227,20 @@ export default function Calculadora() {
   };
 
   const porDia =
-    diasUso && diasUso > 0 ? { min: desglose.total.min / diasUso, max: desglose.total.max / diasUso } : null;
-  const fuentesMercado: IdFuente[] = [...FUENTES_AMARRES, 'roams', 'mapfre', ...FUENTES_MANTENIMIENTO];
+    diasUso && diasUso > 0
+      ? {
+          min: desglose.total.min / diasUso,
+          max: desglose.total.max / diasUso,
+          ...(desglose.total.abierto && { abierto: true }),
+        }
+      : null;
+  const fuentesMercado: IdFuente[] = [
+    ...FUENTES_AMARRES,
+    'roams',
+    'mapfre',
+    ...FUENTES_MANTENIMIENTO,
+    ...FUENTES_MOTOR,
+  ];
 
   return (
     <div>
@@ -475,10 +488,13 @@ export default function Calculadora() {
           </Grupo>
 
           <Grupo titulo="Motor y combustible">
-            <div>
-              <label for="c-motor" class="etiqueta-campo">
-                Tipo de motor
-              </label>
+            <div class="sm:col-span-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <label for="c-motor" class="etiqueta-campo mb-0">
+                  Tipo de motor
+                </label>
+                <InfoMotor />
+              </div>
               <select
                 id="c-motor"
                 class="campo"
@@ -489,10 +505,21 @@ export default function Calculadora() {
                 }}
               >
                 <option value="">Elige…</option>
-                <option value="fueraborda">Fueraborda</option>
-                <option value="intraborda">Intraborda</option>
+                <option value="fueraborda-pequeno">Fueraborda pequeño</option>
+                <option value="fueraborda-grande">Fueraborda grande</option>
+                <option value="intraborda">Intraborda (uno o varios motores)</option>
+                <option value="intraborda-grande">Dos intraborda + generador (yate grande)</option>
                 <option value="ninguno">Sin motor</option>
               </select>
+              <p class="ayuda-campo">
+                {entradas.motor === 'intraborda'
+                  ? entradas.eslora <= 10
+                    ? 'Con tu eslora (hasta 10 m) usamos el dato de revisión de barcos de hasta 10 m.'
+                    : 'Con tu eslora (más de 10 m) usamos el dato de intraborda en barcos medianos.'
+                  : entradas.motor === 'intraborda-grande'
+                    ? 'La cifra de la fuente ya incluye los dos motores y el generador.'
+                    : 'El coste se multiplica por las revisiones al año (según las horas) y por el número de motores.'}
+              </p>
             </div>
             <div>
               <label for="c-num-motores" class="etiqueta-campo">
@@ -502,7 +529,7 @@ export default function Calculadora() {
                 id="c-num-motores"
                 class="campo"
                 value={String(entradas.numMotores)}
-                disabled={entradas.motor === 'ninguno'}
+                disabled={entradas.motor === 'ninguno' || entradas.motor === 'intraborda-grande'}
                 onChange={(ev) => cambiar('numMotores', Number((ev.currentTarget as HTMLSelectElement).value))}
               >
                 <option value="1">1</option>

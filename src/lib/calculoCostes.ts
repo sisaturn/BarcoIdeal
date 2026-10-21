@@ -10,7 +10,17 @@
 import { PARTIDAS, TIPOS_AMARRE, type IdAmarre, type IdPartida, type IdZona } from '../data/costes';
 import { FACTOR_MARINA_SECA, REMOLQUE, rangoAmarrePara, type RangoAmarre } from '../data/amarres';
 import { SEGURO_MERCADO } from '../data/seguro';
-import { ANTIFOULING, COMBUSTIBLE, MOTOR, REGLA_SECTOR, VARADA } from '../data/mantenimiento';
+import {
+  ANTIFOULING,
+  COMBUSTIBLE,
+  ESLORA_INTRABORDA_PEQUENO,
+  FUENTES_MOTOR,
+  INTERVALO_REVISION,
+  REGLA_SECTOR,
+  REVISION_MOTOR,
+  VARADA,
+  type TipoRevision,
+} from '../data/mantenimiento';
 import { periodicidadPara, type Lista } from '../data/inspeccion';
 import { IVA_NUEVA } from '../data/impuestos';
 import type { IdFuente } from '../data/fuentes';
@@ -22,10 +32,23 @@ import { euros, num } from './formato';
 export interface Rango {
   min: number;
   max: number;
+  /** true si la fuente solo da un mínimo («puede superar…»): se lee «max o más». */
+  abierto?: boolean;
 }
 
 export type ModoAmarre = 'rango' | 'privada' | 'publico';
-export type TipoMotor = 'fueraborda' | 'intraborda' | 'ninguno';
+/**
+ * Tipo de motor para el mantenimiento. 'intraborda' usa el dato de hasta 10 m o el de barco mediano según
+ * la eslora; 'intraborda-grande' es un yate grande con dos motores y generador.
+ */
+export type TipoMotor = 'fueraborda-pequeno' | 'fueraborda-grande' | 'intraborda' | 'intraborda-grande' | 'ninguno';
+export const TIPOS_MOTOR: readonly TipoMotor[] = [
+  'fueraborda-pequeno',
+  'fueraborda-grande',
+  'intraborda',
+  'intraborda-grande',
+  'ninguno',
+];
 export type TipoCombustible = 'gasolina' | 'gasoleo';
 export type Antiguedad = 'nuevo' | '5-15' | 'otra';
 
@@ -106,14 +129,37 @@ export const LIMITES = {
 } as const;
 
 const exacto = (n: number): Rango => ({ min: n, max: n });
-const escalar = (r: Rango, k: number): Rango => ({ min: r.min * k, max: r.max * k });
+const escalar = (r: Rango, k: number): Rango => ({
+  min: r.min * k,
+  max: r.max * k,
+  ...(r.abierto && { abierto: true }),
+});
 const limitar = (n: number, min: number, max: number) => Math.min(max, Math.max(min, n));
 const numeroOpcional = (v: number | null, lim: { min: number; max: number }) =>
   v === null || !Number.isFinite(v) ? null : limitar(v, lim.min, lim.max);
 
 /** Texto de un rango: "800 – 6.000 €" o "300 €" si es exacto. */
 export function textoRango(r: Rango): string {
-  return Math.round(r.min) === Math.round(r.max) ? euros(r.min) : `${euros(r.min)} – ${euros(r.max)}`;
+  const base = Math.round(r.min) === Math.round(r.max) ? euros(r.min) : `${euros(r.min)} – ${euros(r.max)}`;
+  return r.abierto ? `${base} o más` : base;
+}
+
+/** Revisión que corresponde al tipo de motor y la eslora. */
+export function revisionPara(motor: Exclude<TipoMotor, 'ninguno'>, eslora: number): TipoRevision {
+  if (motor !== 'intraborda') return motor;
+  return eslora <= ESLORA_INTRABORDA_PEQUENO ? 'intraborda-hasta10' : 'intraborda-mediano';
+}
+
+/** Intervalo del fabricante entre revisiones (h). null = sin dato: se cuenta 1 revisión al año. */
+export function intervaloRevision(motor: Exclude<TipoMotor, 'ninguno'>, combustible: TipoCombustible) {
+  if (motor === 'fueraborda-pequeno' || motor === 'fueraborda-grande') return INTERVALO_REVISION.fueraborda;
+  return combustible === 'gasoleo' ? INTERVALO_REVISION.intrabordaDiesel : INTERVALO_REVISION.intrabordaGasolina;
+}
+
+/** Revisiones al año: horas ÷ intervalo, como mínimo 1 (los fabricantes piden al menos una al año). */
+export function revisionesAlAnio(horas: number | null, intervalo: number | null): number {
+  if (horas === null || intervalo === null || horas <= 0) return 1;
+  return Math.max(1, Math.ceil(horas / intervalo));
 }
 
 /** ¿Tiene motor este tipo de barco? (para la regla del seguro obligatorio) null = depende. */
@@ -277,6 +323,46 @@ function calcularAmarre(e: EntradasCalculo): Calculo {
   return { estimado: rango, explicacion, fuentes };
 }
 
+/** Mantenimiento del motor: revisión anual × revisiones al año según las horas × número de motores. */
+function calcularMotor(e: EntradasCalculo): Calculo {
+  if (e.motor === null) {
+    return {
+      estimado: null,
+      explicacion: 'Depende del tipo de motor, del número de motores y de las horas de uso.',
+      sinDato: 'Elige el tipo de motor de tu barco.',
+      fuentes: FUENTES_MOTOR,
+    };
+  }
+  if (e.motor === 'ninguno') return { estimado: exacto(0), explicacion: 'Sin motor.', fuentes: [] };
+
+  const revision = REVISION_MOTOR[revisionPara(e.motor, e.eslora)];
+  const intervalo = intervaloRevision(e.motor, e.combustible);
+  const revisiones = revisionesAlAnio(e.horasMotor, intervalo?.horas ?? null);
+  const motores = revision.incluyeTodosLosMotores ? 1 : e.numMotores;
+  const base: Rango = { min: revision.min, max: revision.max, ...(revision.abierto && { abierto: true }) };
+
+  const partes = [`${revision.texto}.`];
+  if (intervalo === null) {
+    partes.push('Sin dato del intervalo de revisión para intraborda de gasolina: contamos 1 revisión al año.');
+  } else if (e.horasMotor === null || e.horasMotor <= 0) {
+    partes.push(`Contamos 1 revisión al año; indica las horas de uso (una revisión cada ${num(intervalo.horas)} h).`);
+  } else {
+    partes.push(
+      `${num(e.horasMotor, 0)} h al año ÷ una revisión cada ${num(intervalo.horas)} h = ${revisiones} ${
+        revisiones === 1 ? 'revisión' : 'revisiones'
+      }.`,
+    );
+  }
+  if (revision.incluyeTodosLosMotores) partes.push('La cifra ya incluye los dos motores y el generador.');
+  else if (motores > 1) partes.push(`× ${motores} motores.`);
+
+  return {
+    estimado: escalar(base, revisiones * motores),
+    explicacion: partes.join(' '),
+    fuentes: [...revision.fuentes, ...(intervalo?.fuentes ?? [])],
+  };
+}
+
 function calcularPartidas(e: EntradasCalculo): Record<IdPartida, Calculo> {
   const enAgua = TIPOS_AMARRE[e.amarre].enElAgua;
 
@@ -298,23 +384,7 @@ function calcularPartidas(e: EntradasCalculo): Record<IdPartida, Calculo> {
           fuentes: SEGURO_MERCADO.fuentes,
         };
 
-  const motor: Calculo =
-    e.motor === null
-      ? {
-          estimado: null,
-          explicacion: 'Fueraborda: 150–400 €/año. Intraborda: 300–800 €/año (por motor).',
-          sinDato: 'Elige el tipo de motor de tu barco.',
-          fuentes: MOTOR.fuentes,
-        }
-      : e.motor === 'ninguno'
-        ? { estimado: exacto(0), explicacion: 'Sin motor.', fuentes: MOTOR.fuentes }
-        : {
-            estimado: escalar(MOTOR[e.motor], e.numMotores),
-            explicacion: `${e.motor === 'fueraborda' ? 'Fueraborda: 150–400' : 'Intraborda: 300–800'} € al año por motor${
-              e.numMotores > 1 ? ` × ${e.numMotores} motores` : ''
-            }.`,
-            fuentes: MOTOR.fuentes,
-          };
+  const motor: Calculo = calcularMotor(e);
 
   const antifouling: Calculo = !enAgua
     ? {
@@ -428,7 +498,14 @@ export function calcularDesglose(entradas: EntradasCalculo, ajustes: Ajustes = {
   });
 
   const total = partidas.reduce<Rango>(
-    (t, p) => (p.valor ? { min: t.min + p.valor.min, max: t.max + p.valor.max } : t),
+    (t, p) =>
+      p.valor
+        ? {
+            min: t.min + p.valor.min,
+            max: t.max + p.valor.max,
+            ...((t.abierto || p.valor.abierto) && { abierto: true }),
+          }
+        : t,
     { min: 0, max: 0 },
   );
 

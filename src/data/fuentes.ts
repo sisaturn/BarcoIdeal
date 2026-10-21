@@ -221,6 +221,49 @@ export const FUENTES = {
     // TODO: falta el enlace al artículo concreto.
     url: null,
   }),
+  // ---------------------------------------------------------------- Mercado: mantenimiento del motor
+  todobarco: f({
+    id: 'todobarco',
+    nombre: '¿Cuánto cuesta mantener un barco en 2026? (revisión anual del motor hasta 10 m)',
+    editor: 'Todobarco (blog, 02-01-2026)',
+    tipo: 'mercado',
+    url: 'https://todobarco.com/blog/cuanto-cuesta-mantener-barco/42',
+  }),
+  seatravel: f({
+    id: 'seatravel',
+    nombre: '¿Cuánto cuesta mantener una embarcación de recreo? (mantenimiento del motor)',
+    editor: 'Seatravel (blog, 11-09-2024)',
+    tipo: 'mercado',
+    url: 'https://www.seatravel.es/seatravel/mantener-embarcacion-recreo-barco/',
+  }),
+  emotionsbylu: f({
+    id: 'emotionsbylu',
+    nombre: '¿Cuánto cuesta mantener un barco? (motores intraborda, dos motores y generador)',
+    editor: 'Emotions by Lu (blog, sin fecha)',
+    tipo: 'mercado',
+    url: 'https://emotionsbylu.com/cuanto-cuesta-mantener-un-barco-lo-que-debes-de-saber-antes-de-comprar/',
+  }),
+  buscamostubarco: f({
+    id: 'buscamostubarco',
+    nombre: 'Cuánto cuesta mantener un barco al año (motores fueraborda)',
+    editor: 'Buscamos tu barco (blog, sin fecha)',
+    tipo: 'mercado',
+    url: 'https://buscamostubarco.com/cuanto-cuesta-mantener-un-barco-al-ano-guia-realista/',
+  }),
+  mercuryMantenimiento: f({
+    id: 'mercuryMantenimiento',
+    nombre: 'Mantenimiento de motores fueraborda de cuatro tiempos (cada 100 horas o una vez al año)',
+    editor: 'Mercury Marine (fabricante)',
+    tipo: 'mercado',
+    url: 'https://www.mercurymarine.com/es/us/dockline/four-stroke-maintenance/',
+  }),
+  yanmarMantenimiento: f({
+    id: 'yanmarMantenimiento',
+    nombre: 'Mantenimiento periódico de motores diésel marinos (revisiones a las 50, 250, 500 y 750 horas)',
+    editor: 'Yanmar (fabricante)',
+    tipo: 'mercado',
+    url: 'https://yanmar.com/marine/fr/?p=20336',
+  }),
   alcaidesaVaradero: f({
     id: 'alcaidesaVaradero',
     nombre: 'Tarifas del varadero (boatyard)',

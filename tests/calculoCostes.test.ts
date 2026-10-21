@@ -21,7 +21,7 @@ import {
 import { PARTIDAS, TIPOS_AMARRE, ZONAS, type IdAmarre, type IdPartida } from '../src/data/costes';
 import { FACTOR_MARINA_SECA, RANGOS_AMARRE, REMOLQUE, rangoAmarrePara } from '../src/data/amarres';
 import { SEGURO_MERCADO } from '../src/data/seguro';
-import { ANTIFOULING, MOTOR, REGLA_SECTOR, VARADA } from '../src/data/mantenimiento';
+import { ANTIFOULING, INTERVALO_REVISION, REGLA_SECTOR, REVISION_MOTOR, VARADA } from '../src/data/mantenimiento';
 import { periodicidadPara, type Lista } from '../src/data/inspeccion';
 import { IVA_NUEVA } from '../src/data/impuestos';
 import { TIPOS_BARCO, type IdTipoBarco } from '../src/data/tiposBarco';
@@ -41,7 +41,7 @@ const IVA = 1 + IVA_NUEVA.tipo;
 const completas = (tipo: IdTipoBarco, parcial: Partial<EntradasCalculo> = {}) =>
   entradasPorDefecto(tipo, {
     valor: 20_000,
-    motor: 'fueraborda',
+    motor: 'fueraborda-pequeno',
     horasMotor: 50,
     consumoLitrosHora: 10,
     precioLitro: 2,
@@ -298,16 +298,53 @@ describe('motor y combustible', () => {
     expect(valorDe(entradasPorDefecto('lancha-open', { motor: null }), 'motor')).toBeNull();
   });
 
-  it('fueraborda e intraborda: rango por motor × número de motores', () => {
-    for (const motor of ['fueraborda', 'intraborda'] as const) {
+  it('sin horas: una revisión al año × número de motores', () => {
+    const casos = [
+      ['fueraborda-pequeno', 8, 'fueraborda-pequeno'],
+      ['fueraborda-grande', 8, 'fueraborda-grande'],
+      ['intraborda', 8, 'intraborda-hasta10'],
+      ['intraborda', 10, 'intraborda-hasta10'],
+      ['intraborda', 12, 'intraborda-mediano'],
+    ] as const;
+    for (const [motor, eslora, revision] of casos) {
       for (const numMotores of [1, 2, 3]) {
-        esperarRango(
-          valorDe(entradasPorDefecto('lancha-cabina', { motor, numMotores }), 'motor'),
-          escalar(MOTOR[motor], numMotores),
-          `${motor} × ${numMotores}`,
-        );
+        const r = REVISION_MOTOR[revision];
+        const v = valorDe(entradasPorDefecto('lancha-cabina', { motor, eslora, numMotores }), 'motor');
+        esperarRango(v, escalar({ min: r.min, max: r.max }, numMotores), `${motor} ${eslora} m × ${numMotores}`);
+        expect(!!v?.abierto, `${motor} abierto`).toBe(r.abierto);
       }
     }
+  });
+
+  it('revisiones al año = horas ÷ intervalo del fabricante (mínimo 1)', () => {
+    const fb = INTERVALO_REVISION.fueraborda.horas;
+    const diesel = INTERVALO_REVISION.intrabordaDiesel.horas;
+    const base = (horasMotor: number | null, extra = {}) =>
+      entradasPorDefecto('lancha-open', { motor: 'fueraborda-pequeno', horasMotor, ...extra });
+    const r = REVISION_MOTOR['fueraborda-pequeno'];
+    esperarRango(valorDe(base(fb - 1), 'motor'), exacto(r.min));
+    esperarRango(valorDe(base(fb + 1), 'motor'), exacto(r.min * 2));
+    esperarRango(valorDe(base(fb * 3), 'motor'), exacto(r.min * 3));
+    esperarRango(valorDe(base(0), 'motor'), exacto(r.min));
+    // Intraborda diésel: cada 250 h; de gasolina no hay dato de intervalo → 1 revisión.
+    const m = REVISION_MOTOR['intraborda-mediano'];
+    const intra = (combustible: 'gasolina' | 'gasoleo') =>
+      entradasPorDefecto('lancha-cabina', { motor: 'intraborda', eslora: 11, horasMotor: diesel + 1, combustible });
+    esperarRango(valorDe(intra('gasoleo'), 'motor'), { min: m.min * 2, max: m.max * 2 });
+    esperarRango(valorDe(intra('gasolina'), 'motor'), { min: m.min, max: m.max });
+  });
+
+  it('yate grande con dos motores y generador: «3.000 € o más», sin multiplicar por motores', () => {
+    const r = REVISION_MOTOR['intraborda-grande'];
+    const e = entradasPorDefecto('yate-lujo', { motor: 'intraborda-grande', numMotores: 2, combustible: 'gasoleo' });
+    const v = valorDe(e, 'motor');
+    esperarRango(v, exacto(r.min));
+    expect(v?.abierto).toBe(true);
+    expect(textoRango(v!)).toContain('o más');
+    // 300 h de diésel → 2 revisiones.
+    esperarRango(valorDe({ ...e, horasMotor: 300 }, 'motor'), exacto(r.min * 2));
+    // El total hereda el «o más».
+    expect(calcularDesglose(e).total.abierto).toBe(true);
   });
 
   it('combustible = horas × consumo × precio del litro', () => {
@@ -328,8 +365,8 @@ describe('motor y combustible', () => {
   it('tieneMotor: null si no se sabe; false solo sin motor', () => {
     expect(tieneMotor({ motor: null })).toBeNull();
     expect(tieneMotor({ motor: 'ninguno' })).toBe(false);
-    expect(tieneMotor({ motor: 'fueraborda' })).toBe(true);
-    expect(tieneMotor({ motor: 'intraborda' })).toBe(true);
+    expect(tieneMotor({ motor: 'fueraborda-pequeno' })).toBe(true);
+    expect(tieneMotor({ motor: 'intraborda-grande' })).toBe(true);
   });
 });
 

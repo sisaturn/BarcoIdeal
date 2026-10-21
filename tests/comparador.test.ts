@@ -21,7 +21,7 @@ const CASOS: { entradas: EntradasCalculo; desglose: Desglose }[] = TIPOS.flatMap
       entradasPorDefecto(tipo, {
         amarre,
         valor: 30_000,
-        motor: 'fueraborda',
+        motor: 'fueraborda-pequeno',
         horasMotor: 40,
         consumoLitrosHora: 8,
         precioLitro: 1.9,

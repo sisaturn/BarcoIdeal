@@ -10,7 +10,14 @@ import { PREGUNTAS, esRespuestaValida, type IdPregunta, type Respuestas } from '
 import { esTipoBarco, type IdTipoBarco } from '../data/tiposBarco';
 import { esAmarre, esPartida, esZona } from '../data/costes';
 import { esPuerto } from '../data/puertos';
-import { entradasPorDefecto, sanear, type Ajustes, type EntradasCalculo, type Rango } from './calculoCostes';
+import {
+  TIPOS_MOTOR,
+  entradasPorDefecto,
+  sanear,
+  type Ajustes,
+  type EntradasCalculo,
+  type Rango,
+} from './calculoCostes';
 
 const CLAVE_TEST = `${STORAGE_PREFIX}:test`;
 const CLAVE_CALCULADORA = `${STORAGE_PREFIX}:calculadora`;
@@ -108,7 +115,7 @@ export function validarCalculadora(dato: unknown): EstadoCalculadora | null {
   const uno = <T extends string>(v: unknown, permitidos: readonly T[]): T | undefined =>
     typeof v === 'string' && (permitidos as readonly string[]).includes(v) ? (v as T) : undefined;
   const modoAmarre = uno(e.modoAmarre, ['rango', 'privada', 'publico'] as const);
-  const motor = uno(e.motor, ['fueraborda', 'intraborda', 'ninguno'] as const);
+  const motor = uno(e.motor, TIPOS_MOTOR);
   const combustible = uno(e.combustible, ['gasolina', 'gasoleo'] as const);
   const antifouling = uno(e.antifouling, ['profesional', 'diy'] as const);
   const antiguedad = uno(e.antiguedad, ['nuevo', '5-15', 'otra'] as const);

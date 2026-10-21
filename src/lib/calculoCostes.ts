@@ -92,7 +92,7 @@ export interface Desglose {
 }
 
 export const LIMITES = {
-  eslora: { min: 2, max: 30 },
+  eslora: { min: 2, max: 60 },
   manga: { min: 0.5, max: 15 },
   horasMotor: { min: 0, max: 2000 },
   consumo: { min: 0, max: 500 },

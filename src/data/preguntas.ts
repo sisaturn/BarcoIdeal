@@ -92,7 +92,10 @@ export const PREGUNTAS: Pregunta[] = [
       { valor: '10-30', etiqueta: 'De 10.000 a 30.000 €' },
       { valor: '30-60', etiqueta: 'De 30.000 a 60.000 €' },
       { valor: '60-120', etiqueta: 'De 60.000 a 120.000 €' },
-      { valor: '120+', etiqueta: 'Más de 120.000 €' },
+      { valor: '120-300', etiqueta: 'De 120.000 a 300.000 €' },
+      { valor: '300-1000', etiqueta: 'De 300.000 a 1 millón de €' },
+      { valor: '1000-3000', etiqueta: 'De 1 a 3 millones de €' },
+      { valor: '3000+', etiqueta: 'Más de 3 millones de €' },
     ],
   },
   {
@@ -105,7 +108,9 @@ export const PREGUNTAS: Pregunta[] = [
       { valor: '1.5-4', etiqueta: 'De 1.500 a 4.000 € al año' },
       { valor: '4-8', etiqueta: 'De 4.000 a 8.000 € al año' },
       { valor: '8-15', etiqueta: 'De 8.000 a 15.000 € al año' },
-      { valor: '15+', etiqueta: 'Más de 15.000 € al año' },
+      { valor: '15-40', etiqueta: 'De 15.000 a 40.000 € al año' },
+      { valor: '40-100', etiqueta: 'De 40.000 a 100.000 € al año' },
+      { valor: '100+', etiqueta: 'Más de 100.000 € al año' },
     ],
   },
   {

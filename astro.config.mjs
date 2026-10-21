@@ -45,10 +45,12 @@ export default defineConfig({
       algorithm: 'SHA-256',
       directives: [
         "default-src 'self'",
-        "img-src 'self' data:",
+        // Microsoft Clarity (solo se carga si el usuario acepta la analítica): dominios según Microsoft,
+        // https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-csp
+        "img-src 'self' data: https://*.clarity.ms https://c.bing.com",
         "font-src 'self'",
         // Formspree (formulario) y Cloudflare Web Analytics (si lo activas).
-        "connect-src 'self' https://formspree.io https://cloudflareinsights.com",
+        "connect-src 'self' https://formspree.io https://cloudflareinsights.com https://*.clarity.ms https://c.bing.com",
         "form-action 'self' https://formspree.io",
         "base-uri 'self'",
         "object-src 'none'",
@@ -59,7 +61,13 @@ export default defineConfig({
       ],
       scriptDirective: {
         // El script de Cloudflare Web Analytics, por si lo activas desde BaseLayout.astro.
-        resources: ["'self'", 'https://static.cloudflareinsights.com'],
+        // y Microsoft Clarity (www.clarity.ms y sus subdominios), solo con consentimiento.
+        resources: [
+          "'self'",
+          'https://static.cloudflareinsights.com',
+          'https://www.clarity.ms',
+          'https://*.clarity.ms',
+        ],
       },
       // Sin 'unsafe-inline': ni <style> ni atributos style="" inyectados se aplicarían.
       // (Los anchos de las barras los pone JavaScript, que la CSP no bloquea.)

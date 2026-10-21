@@ -24,6 +24,7 @@ import { notaTitulacion } from '../lib/fichas';
 import Aviso from './Aviso';
 import { FOTOS_BARCO } from '../data/fotos';
 import type { IdTipoBarco } from '../data/tiposBarco';
+import { eventoClarity } from '../lib/clarity';
 
 /** Fotos ya optimizadas por Astro (las calcula test.astro y las pasa como propiedad). */
 export type FotosTest = Record<IdTipoBarco, { src: string; srcset: string }>;
@@ -240,6 +241,7 @@ function Resultado({ respuestas, fotos, tituloRef, onCambiar, onReiniciar }: Pro
   // Guardamos el resultado (para el formulario de ayuda) y lo reflejamos en la URL.
   useEffect(() => {
     guardarTest({ respuestas, recomendados: recomendaciones.map((r) => r.tipo.id) });
+    eventoClarity('test_completado');
     history.replaceState(null, '', `${window.location.pathname}?${queryTest(respuestas)}`);
   }, [respuestas, recomendaciones]);
 

@@ -7,11 +7,36 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AvisoPlantilla from '../components/AvisoPlantilla.astro';
 import { CONTACT_EMAIL, OWNER_NAME, SITE_NAME, SITE_URL } from '../config';
+import { clarityConfigurado } from '../lib/clarity';
+
+/** Con un proyecto de Clarity configurado, la política explica sus cookies; sin él, que no hay. */
+const conAnalitica = clarityConfigurado();
+
+/** Cookies que Microsoft indica para Clarity (https://learn.microsoft.com/en-us/clarity/setup-and-installation/cookie-list). */
+const COOKIES_CLARITY = [
+  {
+    nombre: '_clck',
+    tipo: 'Propia',
+    finalidad: 'Guarda el identificador de Clarity de tu navegador y sus ajustes para esta web.',
+  },
+  { nombre: '_clsk', tipo: 'Propia', finalidad: 'Une las páginas que visitas en una misma grabación de sesión.' },
+  {
+    nombre: 'MUID',
+    tipo: 'De terceros (Microsoft)',
+    finalidad: 'Identifica navegadores únicos en los sitios de Microsoft (publicidad, analítica y fines operativos).',
+  },
+  {
+    nombre: 'ANONCHK',
+    tipo: 'De terceros (Microsoft)',
+    finalidad: 'Indica si MUID se pasa a la cookie publicitaria ANID; Clarity no usa ANID, así que vale siempre 0.',
+  },
+  { nombre: 'SM', tipo: 'De terceros (Microsoft)', finalidad: 'Sincroniza MUID entre los dominios de Microsoft.' },
+];
 ---
 
 <BaseLayout
   title="Política de privacidad"
-  description={`Cómo trata ${SITE_NAME} tus datos personales: qué datos recoge el formulario, para qué, durante cuánto tiempo y cómo ejercer tus derechos. Sin cookies de seguimiento.`}
+  description={`Cómo trata ${SITE_NAME} tus datos personales: qué datos recoge el formulario, para qué, durante cuánto tiempo y cómo ejercer tus derechos. ${conAnalitica ? 'Cookies de analítica solo con tu consentimiento.' : 'Sin cookies de seguimiento.'}`}
 >
   <section class="py-10 sm:py-14">
     <div class="contenedor">
@@ -89,6 +114,13 @@ import { CONTACT_EMAIL, OWNER_NAME, SITE_NAME, SITE_URL } from '../config';
             <strong>Cloudflare</strong> (Cloudflare, Inc.): alojamiento de la web y, si está activada, estadística de
             visitas sin cookies (Cloudflare Web Analytics). [VERIFICAR la garantía para la transferencia internacional.]
           </li>
+          {conAnalitica && (
+            <li>
+              <strong>Microsoft</strong> (Microsoft Corporation, EE. UU.): Microsoft Clarity, la analítica de uso de la
+              web, solo si la aceptas en el aviso de cookies. [VERIFICAR la garantía para la transferencia internacional
+              y el papel de Microsoft (encargado o corresponsable) en sus condiciones de Clarity.]
+            </li>
+          )}
           <li>
             <strong>[PROVEEDOR DE EMAIL]</strong>: donde recibimos y respondemos tu solicitud.
           </li>
@@ -106,11 +138,76 @@ import { CONTACT_EMAIL, OWNER_NAME, SITE_NAME, SITE_URL } from '../config';
         </p>
 
         <h2 id="cookies">8. Cookies y datos guardados en tu navegador</h2>
-        <p>
-          <strong>Esta web no usa cookies de seguimiento ni de publicidad</strong>, propias ni de terceros. Si está
-          activada, la estadística de visitas de Cloudflare Web Analytics funciona sin cookies y sin identificarte
-          personalmente.
-        </p>
+        {conAnalitica ? (
+          <>
+            <p>
+              <strong>Solo usamos cookies de analítica si las aceptas</strong> en el aviso que aparece al entrar. Si las
+              rechazas, o mientras no decidas, no se carga nada. Guardamos tu decisión en tu navegador durante 12 meses
+              y puedes cambiarla cuando quieras:
+            </p>
+            <p>
+              <button type="button" data-abrir-cookies class="btn-secundario">
+                Configurar cookies
+              </button>
+            </p>
+            <p>
+              Si las aceptas, usamos <strong>Microsoft Clarity</strong> para entender cómo se usa la web y mejorarla: en
+              qué botones se hace clic, hasta dónde se desplaza la gente, mapas de calor y grabaciones de la sesión.
+              Microsoft ofrece además resúmenes automáticos de esos datos con inteligencia artificial (Copilot). Los
+              campos del formulario de ayuda <strong>no se graban</strong>: los ocultamos a Clarity. No usamos estos
+              datos para publicidad y le indicamos a Clarity que no tienes consentida la publicidad. Base jurídica: tu
+              consentimiento (art. 6.1.a RGPD y art. 22.2 de la LSSI).
+            </p>
+            <p>Según Microsoft, Clarity puede usar estas cookies:</p>
+            <div class="not-prose overflow-x-auto rounded-xl border border-espuma-200">
+              <table class="w-full min-w-md text-left text-sm">
+                <thead class="bg-espuma-100 text-mar-950">
+                  <tr>
+                    <th scope="col" class="px-4 py-3">
+                      Cookie
+                    </th>
+                    <th scope="col" class="px-4 py-3">
+                      Tipo
+                    </th>
+                    <th scope="col" class="px-4 py-3">
+                      Para qué sirve
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-espuma-200">
+                  {COOKIES_CLARITY.map((c) => (
+                    <tr>
+                      <td class="px-4 py-3 font-mono">{c.nombre}</td>
+                      <td class="px-4 py-3">{c.tipo}</td>
+                      <td class="px-4 py-3">{c.finalidad}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>
+              La duración de cada cookie la fija Microsoft: consúltala en su{' '}
+              <a
+                href="https://learn.microsoft.com/en-us/clarity/setup-and-installation/cookie-list"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                lista de cookies de Clarity
+              </a>{' '}
+              y en la{' '}
+              <a href="https://privacy.microsoft.com/es-es/privacystatement" rel="noopener noreferrer" target="_blank">
+                declaración de privacidad de Microsoft
+              </a>
+              . [VERIFICAR las duraciones en la lista oficial antes de publicar.]
+            </p>
+          </>
+        ) : (
+          <p>
+            <strong>Esta web no usa cookies de seguimiento ni de publicidad</strong>, propias ni de terceros. Si está
+            activada, la estadística de visitas de Cloudflare Web Analytics funciona sin cookies y sin identificarte
+            personalmente.
+          </p>
+        )}
         <p>
           Para que no pierdas tu trabajo, el test y la calculadora guardan tus respuestas
           <strong>solo en tu propio navegador</strong> (almacenamiento local o <em>localStorage</em>). Estos datos no
@@ -144,6 +241,11 @@ import { CONTACT_EMAIL, OWNER_NAME, SITE_NAME, SITE_URL } from '../config';
 <script>
   // Script empaquetado por Astro (sin define:vars) para que encaje con la CSP.
   import { STORAGE_PREFIX } from '../config';
+  import { EVENTO_ABRIR_AVISO } from '../lib/consentimiento';
+
+  for (const b of document.querySelectorAll('article [data-abrir-cookies]')) {
+    b.addEventListener('click', () => window.dispatchEvent(new Event(EVENTO_ABRIR_AVISO)));
+  }
 
   const boton = document.getElementById('borrar-datos');
   const estado = document.getElementById('borrar-datos-estado');

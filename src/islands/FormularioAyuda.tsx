@@ -18,6 +18,7 @@ import {
   type EstadoTest,
 } from '../lib/estado';
 import { aTexto, lineasCalculadora, lineasTest, type LineaResumen } from '../lib/resumen';
+import { eventoClarity } from '../lib/clarity';
 
 const OPCIONES_PRESUPUESTO = [
   ...PREGUNTAS.find((p) => p.id === 'compra')!.opciones,
@@ -229,6 +230,7 @@ export default function FormularioAyuda() {
       });
       if (resp.ok) {
         guardarUltimoEnvio();
+        eventoClarity('formulario_enviado');
         setEstado('ok');
         return;
       }
@@ -278,7 +280,14 @@ export default function FormularioAyuda() {
   const numErrores = Object.values(errores).filter(Boolean).length;
 
   return (
-    <form ref={refForm} class="tarjeta space-y-6" noValidate onSubmit={enviar} aria-describedby="f-obligatorios">
+    <form
+      ref={refForm}
+      class="tarjeta space-y-6"
+      noValidate
+      onSubmit={enviar}
+      aria-describedby="f-obligatorios"
+      data-clarity-mask="True"
+    >
       {!ENDPOINT_CONFIGURADO && (
         <p class="rounded-lg border border-dashed border-baliza-400 bg-baliza-50 p-3 text-sm text-baliza-800">
           <strong>Modo prototipo:</strong> falta configurar <code>FORMSPREE_ENDPOINT</code> (variable{' '}

@@ -2,6 +2,9 @@
 import Logo from './Logo.astro';
 import Ola from './Ola.astro';
 import { SITE_NAME, CONTACT_EMAIL } from '../config';
+import { clarityConfigurado } from '../lib/clarity';
+
+const conAnalitica = clarityConfigurado();
 
 const anio = new Date().getFullYear();
 
@@ -56,8 +59,19 @@ const columnas = [
             d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6L12 3Z"
           ></path>
         </svg>
-        Sin cookies de seguimiento
+        {conAnalitica ? 'Analítica solo si la aceptas' : 'Sin cookies de seguimiento'}
       </p>
+      {conAnalitica && (
+        <p class="mt-3">
+          <button
+            type="button"
+            data-abrir-cookies
+            class="inline-flex min-h-9 items-center text-sm text-mar-100 underline underline-offset-2 hover:text-white"
+          >
+            Configurar cookies
+          </button>
+        </p>
+      )}
     </div>
 
     {columnas.map((c) => (
@@ -81,3 +95,11 @@ const columnas = [
     </p>
   </div>
 </footer>
+
+<script>
+  import { EVENTO_ABRIR_AVISO } from '../lib/consentimiento';
+
+  for (const boton of document.querySelectorAll('[data-abrir-cookies]')) {
+    boton.addEventListener('click', () => window.dispatchEvent(new Event(EVENTO_ABRIR_AVISO)));
+  }
+</script>

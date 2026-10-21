@@ -42,6 +42,14 @@ export const DEFAULT_OG_IMAGE = '/og-default.png';
  */
 export const GOOGLE_SITE_VERIFICATION = '';
 
+/**
+ * Id del proyecto de Microsoft Clarity (analítica con mapas de calor y grabaciones).
+ * Está en Clarity → Settings → Overview → «Project ID» (p. ej. "abcd1234ef"). Es público: aparece en la web.
+ * Vacío = Clarity desactivado y sin aviso de cookies. También se puede dar con la variable de entorno
+ * PUBLIC_CLARITY_PROJECT_ID (Cloudflare Pages → Settings → Variables).
+ */
+export const CLARITY_PROJECT_ID: string = (import.meta.env.PUBLIC_CLARITY_PROJECT_ID ?? '').trim() || '';
+
 /** Otras formas de escribir el nombre, para que Google asocie las búsquedas a la web. */
 export const SITE_ALTERNATE_NAMES = ['barcoideal', 'Barco Ideal'];
 

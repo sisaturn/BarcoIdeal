@@ -54,7 +54,9 @@ const filas = LISTA_TIPOS_BARCO.map((t) => ({ tipo: t, coste: costeReferencia(t)
                 <span class="mt-1 text-sm leading-relaxed">{tipo.resumen}</span>
                 <span class="mt-3 text-sm font-semibold text-mar-800">
                   {coste.total
-                    ? `Amarre y mantenimiento básico: ${textoRango(coste.total)}/año`
+                    ? coste.sinAmarre
+                      ? `Sin dato de amarre. Solo ${coste.incluye.join(', ')}: ${textoRango(coste.total)}/año`
+                      : `Amarre y mantenimiento básico: ${textoRango(coste.total)}/año`
                     : 'Coste anual: sin dato'}
                 </span>
               </span>
@@ -104,6 +106,7 @@ const filas = LISTA_TIPOS_BARCO.map((t) => ({ tipo: t, coste: costeReferencia(t)
                 <td class="px-4 py-3">{TITULACIONES[tipo.titulacionHabitual].corto}</td>
                 <td class="px-4 py-3 text-right whitespace-nowrap tabular-nums">
                   {coste.total ? textoRango(coste.total) : 'Sin dato'}
+                  {coste.total && coste.sinAmarre && <span class="block text-xs text-espuma-600">sin amarre</span>}
                 </td>
               </tr>
             ))}

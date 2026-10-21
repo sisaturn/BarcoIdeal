@@ -75,6 +75,22 @@ export const FOTOS_BARCO: Record<IdTipoBarco, CreditoFoto> = {
     origen: 'https://commons.wikimedia.org/wiki/File:Catamaran_de_croisi%C3%A8re_Lagoon_560.JPG',
     encuadre: 'object-[35%_60%]',
   },
+  'yate-lujo': {
+    alt: 'Yate a motor de lujo con flybridge navegando por un río',
+    autor: 'Andrey Korzun',
+    licencia: 'CC BY-SA 4.0',
+    urlLicencia: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    origen: 'https://commons.wikimedia.org/wiki/File:2018_SPb_Azimut_70_Yacht_01.jpg',
+    encuadre: 'object-[55%_65%]',
+  },
+  superyate: {
+    alt: 'Superyate blanco de varias cubiertas amarrado en un puerto entre acantilados',
+    autor: 'Myrabella',
+    licencia: 'CC BY-SA 3.0',
+    urlLicencia: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    origen: 'https://commons.wikimedia.org/wiki/File:Lady_Lau_super-yacht_IMO_1010674_Bonifacio.jpg',
+    encuadre: 'object-[50%_55%]',
+  },
   'moto-agua': {
     alt: 'Moto de agua navegando cerca de una playa con palmeras',
     autor: 'NorbertNagel',

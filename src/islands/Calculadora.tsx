@@ -16,11 +16,13 @@ import {
   type IdZona,
 } from '../data/costes';
 import { AVISO_AMARRES, FUENTES_AMARRES, REMOLQUE } from '../data/amarres';
+import { FECHA_VERIFICACION_PUERTOS, PUERTOS, puertoPorId, tarifaPuertoPara, type Puerto } from '../data/puertos';
 import { FUENTES_MANTENIMIENTO, COMBUSTIBLE } from '../data/mantenimiento';
 import { FUENTES, type IdFuente } from '../data/fuentes';
 import { DIAS_POR_RESPUESTA } from '../data/preguntas';
 import {
   calcularDesglose,
+  conPuerto,
   entradasPorDefecto,
   textoRango,
   LIMITES,
@@ -81,6 +83,52 @@ function Opciones<T extends string>(props: {
   );
 }
 
+/** Datos del puerto elegido: web oficial, tarifa verificada (si la hay) y qué hacer si no. */
+function InfoPuerto({ puerto, entradas }: { puerto: Puerto; entradas: EntradasCalculo }) {
+  const tarifa = tarifaPuertoPara(puerto, entradas.eslora, TIPOS_BARCO[entradas.tipo].propulsion);
+  const usaTarifa = tarifa && entradas.modoAmarre === 'privada' && entradas.precioAmarreAnual === null;
+  return (
+    <div class="mt-2 space-y-2 rounded-lg border border-espuma-200 bg-espuma-50 p-3 text-sm text-espuma-800">
+      <p class="font-semibold text-mar-900">
+        {puerto.nombre} <span class="font-normal text-espuma-600">· {puerto.lugar}</span>
+      </p>
+      {puerto.nota && <p>{puerto.nota}</p>}
+      {tarifa ? (
+        <p>
+          <Insignia tipo="mercado" /> Tarifa anual publicada para {num(tarifa.eslora)} m:{' '}
+          <strong>{num(tarifa.euros, 0)} €/año</strong> sin IVA ni tasas.{' '}
+          {usaTarifa
+            ? 'La usamos en el cálculo; si te dan otro precio, escríbelo abajo.'
+            : 'Para usarla, elige «Marina privada» y deja la tarifa vacía.'}
+        </p>
+      ) : (
+        <p>
+          <Insignia tipo="sinDato" />{' '}
+          {puerto.tarifa
+            ? `Su tabla verificada no llega a ${num(entradas.eslora)} m: consulta su tarifa y escríbela abajo.`
+            : 'No tenemos su tarifa verificada. Consúltala en su web y escríbela abajo, en «Marina privada» o «Puerto público».'}
+        </p>
+      )}
+      <p>
+        {puerto.web ? (
+          <a
+            href={puerto.web}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-semibold text-mar-800 underline underline-offset-2"
+          >
+            Web oficial de {puerto.nombre}
+          </a>
+        ) : (
+          'Web oficial pendiente de verificar: búscala por su nombre.'
+        )}
+        <span class="text-espuma-600"> · Webs comprobadas el {FECHA_VERIFICACION_PUERTOS}.</span>
+      </p>
+      {tarifa && <FuenteDato fuentes={[tarifa.fuente]} />}
+    </div>
+  );
+}
+
 const Grupo = ({ titulo, children }: { titulo: string; children: ComponentChildren }) => (
   <div class="border-t border-espuma-200 pt-5 first:border-t-0 first:pt-0">
     <h3 class="mb-4 text-sm font-bold tracking-wide text-mar-800 uppercase">{titulo}</h3>
@@ -110,7 +158,8 @@ export default function Calculadora() {
   useEffect(() => {
     const desdeURL = entradasDesdeURL(window.location.search);
     if (desdeURL.entradas.tipo) {
-      setEntradas(entradasPorDefecto(desdeURL.entradas.tipo, desdeURL.entradas));
+      const base = entradasPorDefecto(desdeURL.entradas.tipo, desdeURL.entradas);
+      setEntradas(desdeURL.entradas.puerto ? conPuerto(base, desdeURL.entradas.puerto) : base);
       setDiasUso(desdeURL.diasUso);
       setOrigen('url');
       return;
@@ -146,6 +195,7 @@ export default function Calculadora() {
   const amarreHabitual = tipo.guardado.includes(entradas.amarre);
   const hayAjustes = Object.keys(ajustes).length > 0;
   const enPuertoOSeca = entradas.amarre !== 'remolque';
+  const puerto = puertoPorId(entradas.puerto);
 
   const cambiar = <K extends keyof EntradasCalculo>(clave: K, valor: EntradasCalculo[K]) => {
     setUsado(true);
@@ -155,8 +205,13 @@ export default function Calculadora() {
   const cambiarTipo = (nuevo: IdTipoBarco) => {
     // Al cambiar de tipo se carga su eslora típica (se conserva la zona) y se borran los ajustes.
     setUsado(true);
-    setEntradas((e) => entradasPorDefecto(nuevo, { zona: e.zona }));
+    setEntradas((e) => conPuerto(entradasPorDefecto(nuevo, { zona: e.zona }), e.puerto));
     setAjustes({});
+  };
+
+  const elegirPuerto = (id: string | null) => {
+    setUsado(true);
+    setEntradas((e) => conPuerto(e, id));
   };
 
   const ajustar = (id: IdPartida, valor: number | null) => {
@@ -306,6 +361,44 @@ export default function Calculadora() {
                 }
               />
             </div>
+            {enPuertoOSeca && (
+              <div class="sm:col-span-2">
+                <label for="c-puerto" class="etiqueta-campo">
+                  Puerto o marina <span class="font-normal text-espuma-600">(opcional)</span>
+                </label>
+                <select
+                  id="c-puerto"
+                  class="campo"
+                  value={entradas.puerto ?? ''}
+                  onChange={(ev) => elegirPuerto((ev.currentTarget as HTMLSelectElement).value || null)}
+                  aria-describedby="c-puerto-ayuda"
+                >
+                  <option value="">Sin elegir (otro puerto o aún no lo sé)</option>
+                  {(Object.keys(ZONAS) as IdZona[]).map((z) => {
+                    const lista = PUERTOS.filter((p) => p.zona === z);
+                    return lista.length === 0 ? null : (
+                      <optgroup key={z} label={ZONAS[z].nombre}>
+                        {lista.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.nombre} · {p.lugar}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
+                </select>
+                <div id="c-puerto-ayuda">
+                  {puerto ? (
+                    <InfoPuerto puerto={puerto} entradas={entradas} />
+                  ) : (
+                    <p class="ayuda-campo">
+                      Elige dónde dejarás el barco para ver su web y, si la tenemos verificada, su tarifa. Si no está en
+                      la lista, déjalo sin elegir y escribe su tarifa abajo.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
             {enPuertoOSeca && (
               <div class="sm:col-span-2">
                 <Opciones<ModoAmarre>

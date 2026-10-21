@@ -16,7 +16,15 @@
 import { LISTA_TITULACIONES, esloraMaximaPara, type IdTitulacion } from './titulaciones';
 
 export type IdTipoBarco =
-  'semirrigida' | 'lancha-open' | 'lancha-cabina' | 'velero-pequeno' | 'velero-crucero' | 'catamaran' | 'moto-agua';
+  | 'semirrigida'
+  | 'lancha-open'
+  | 'lancha-cabina'
+  | 'velero-pequeno'
+  | 'velero-crucero'
+  | 'catamaran'
+  | 'yate-lujo'
+  | 'superyate'
+  | 'moto-agua';
 
 export type Propulsion = 'motor' | 'vela';
 /** Coincide con los ids de amarre de costes.ts y con las respuestas del test. */
@@ -187,6 +195,55 @@ const FICHAS: Record<IdTipoBarco, TipoBarcoBase> = {
     guardado: ['puerto'],
   },
 
+  'yate-lujo': {
+    id: 'yate-lujo',
+    nombre: 'Yate de lujo',
+    resumen: 'Motor, flybridge y camarotes con baño: una casa de alta gama sobre el agua.',
+    descripcion:
+      'Un yate a motor grande, normalmente con flybridge (puente alto), salón, cocina completa y varios camarotes con baño. Permite pasar semanas a bordo con familia o invitados y moverse rápido entre puertos. Por tamaño, necesita amarre en puerto y una titulación alta.',
+    propulsion: 'motor',
+    // 15–24 m: hasta 24 m es el límite de eslora de las titulaciones de recreo con dato (Patrón de Yate).
+    eslora: { min: 15, max: 24, tipica: 18 },
+    personasComodas: '6 a 12 de día, 4 a 8 para dormir',
+    ventajas: [
+      'Mucho espacio y comodidad, dentro y en cubierta',
+      'Rápido para cambiar de puerto o de isla',
+      'Se puede vivir a bordo temporadas largas',
+    ],
+    inconvenientes: [
+      'Amarre caro y difícil de encontrar en temporada alta',
+      'Consumo de combustible muy alto',
+      'Mantenimiento complejo: motores, generador, climatización, electrónica…',
+      'Pide experiencia o un patrón profesional',
+    ],
+    precioCompra: null, // TODO: precio de compra no verificado. Consultar portales de compraventa o un tasador náutico.
+    guardado: ['puerto'],
+  },
+
+  superyate: {
+    id: 'superyate',
+    nombre: 'Superyate',
+    resumen: 'Más de 24 metros: lujo máximo, tripulación y puertos especializados.',
+    descripcion:
+      'Un yate de más de 24 metros de eslora, con varias cubiertas, camarotes para invitados y zonas para la tripulación. Por encima de 24 m cambian las reglas: las titulaciones de recreo habituales llegan hasta 24 m y estos barcos suelen gobernarlos tripulaciones profesionales. Solo algunos puertos tienen amarres para estas esloras.',
+    propulsion: 'motor',
+    // Desde 24 m: por encima de esa eslora ya no hay datos de titulaciones de recreo salvo el Capitán de Yate.
+    eslora: { min: 24, max: 60, tipica: 35 },
+    personasComodas: '8 a 12 invitados para dormir, más la tripulación',
+    ventajas: [
+      'El máximo de espacio, comodidad y servicios a bordo',
+      'Autonomía para travesías largas',
+      'Normalmente lo lleva una tripulación profesional',
+    ],
+    inconvenientes: [
+      'Amarres escasos: solo algunas marinas admiten estas esloras',
+      'Gastos de tripulación, combustible y mantenimiento muy altos',
+      'Normativa más exigente: consulta con la Capitanía Marítima antes de comprar',
+    ],
+    precioCompra: null, // TODO: precio de compra no verificado. Consultar brókers de superyates o un tasador náutico.
+    guardado: ['puerto'],
+  },
+
   'moto-agua': {
     id: 'moto-agua',
     nombre: 'Moto de agua',
@@ -249,6 +306,8 @@ export const LISTA_TIPOS_BARCO: TipoBarco[] = [
   TIPOS_BARCO['velero-pequeno'],
   TIPOS_BARCO['velero-crucero'],
   TIPOS_BARCO.catamaran,
+  TIPOS_BARCO['yate-lujo'],
+  TIPOS_BARCO.superyate,
   TIPOS_BARCO['moto-agua'],
 ];
 

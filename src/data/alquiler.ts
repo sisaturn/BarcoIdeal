@@ -26,6 +26,8 @@ export const ALQUILER_DIA: Record<IdTipoBarco, PrecioAlquiler> = {
   'velero-pequeno': { sinPatron: null, conPatron: null },
   'velero-crucero': { sinPatron: null, conPatron: null },
   catamaran: { sinPatron: null, conPatron: null },
+  'yate-lujo': { sinPatron: null, conPatron: null },
+  superyate: { sinPatron: null, conPatron: null },
   'moto-agua': { sinPatron: null, conPatron: null },
 };
 

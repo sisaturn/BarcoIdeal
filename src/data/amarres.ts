@@ -66,19 +66,25 @@ export interface EjemploAmarre {
   fuente: IdFuente;
 }
 
+/**
+ * Tarifa anual de Alcaidesa Marina (2026, con descuento, sin IVA). También la usa el selector de
+ * puertos de la calculadora (puertos.ts).
+ */
+export const TARIFAS_ALCAIDESA: { eslora: number; euros: number; nota?: string }[] = [
+  { eslora: 8, euros: 2568 },
+  { eslora: 10, euros: 3696 },
+  { eslora: 12, euros: 4314, nota: 'veleros' },
+  { eslora: 12, euros: 6672, nota: 'motor' },
+  { eslora: 14, euros: 5931 },
+  { eslora: 15, euros: 7371 },
+];
+
 /** Datos reales verificados que se muestran como ejemplos. */
 export const EJEMPLOS_AMARRE: EjemploAmarre[] = [
   {
     lugar: 'Alcaidesa Marina (Cádiz, Estrecho)',
     tipo: 'Marina privada',
-    precios: [
-      { eslora: 8, euros: 2568 },
-      { eslora: 10, euros: 3696 },
-      { eslora: 12, euros: 4314, nota: 'veleros' },
-      { eslora: 12, euros: 6672, nota: 'motor' },
-      { eslora: 14, euros: 5931 },
-      { eslora: 15, euros: 7371 },
-    ],
+    precios: TARIFAS_ALCAIDESA,
     condiciones: 'Tarifa anual con descuento, sin IVA (tarifas 2026).',
     fuente: 'alcaidesaTarifas',
   },

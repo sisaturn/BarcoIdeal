@@ -19,7 +19,7 @@ import { FUENTES_MANTENIMIENTO } from '../../data/mantenimiento';
 import { SEGURO_LEGAL } from '../../data/seguro';
 import { FUENTES_INSPECCION, INTERMEDIA, PERIODICIDAD } from '../../data/inspeccion';
 import { IEDMT } from '../../data/impuestos';
-import { costeReferencia, notaTitulacion, tablaCostes, usosDelTipo } from '../../lib/fichas';
+import { costeReferencia, notaTitulacion, tablaCostes, titulacionSinVerificar, usosDelTipo } from '../../lib/fichas';
 import { entradasPorDefecto, textoRango } from '../../lib/calculoCostes';
 import { urlCalculadora } from '../../lib/estado';
 import { num } from '../../lib/formato';
@@ -53,6 +53,12 @@ const inspeccion = PERIODICIDAD.filter(
   (r) =>
     `Lista 7.ª, ${r.hastaExclusivo ? `menos de ${num(r.esloraHasta)} m` : `de ${num(r.esloraDesde)} a ${num(r.esloraHasta)} m`}: ${r.texto.toLowerCase()}.`,
 );
+// Por encima de la última eslora con dato de periodicidad, se dice que falta el dato (no se extrapola).
+const esloraMaxInspeccion = Math.max(...PERIODICIDAD.filter((r) => r.lista === 7).map((r) => r.esloraHasta));
+if (tipo.eslora.max > esloraMaxInspeccion)
+  inspeccion.push(
+    `Más de ${num(esloraMaxInspeccion)} m: los datos verificados no indican la periodicidad. Consulta el Real Decreto 1434/1999 o la Capitanía Marítima.`,
+  );
 const conIntermedia = tipo.eslora.max >= INTERMEDIA.esloraMinima;
 const iedmt =
   tipo.eslora.max > IEDMT.esloraMayorQue
@@ -188,8 +194,9 @@ const iedmt =
             <Insignia tipo="mercado" />
           </div>
           <p class="mt-2">
-            Estimación orientativa para {num(tipo.eslora.tipica)} m con lo que podemos calcular sin tus datos (amarre y
-            mantenimiento básico). Faltan seguro, combustible, inspección y tasas: complétalo en la calculadora.
+            {referencia.sinAmarre
+              ? `Estimación orientativa para ${num(tipo.eslora.tipica)} m con lo que podemos calcular sin tus datos: solo mantenimiento básico, porque no hay dato de amarre para esta eslora. Faltan amarre, seguro, combustible, inspección y tasas: elige tu puerto y complétalo en la calculadora.`
+              : `Estimación orientativa para ${num(tipo.eslora.tipica)} m con lo que podemos calcular sin tus datos (amarre y mantenimiento básico). Faltan seguro, combustible, inspección y tasas: complétalo en la calculadora.`}
           </p>
           <div class="mt-4 overflow-x-auto rounded-xl border border-espuma-200">
             <table class="w-full min-w-md text-left text-sm">
@@ -255,6 +262,11 @@ const iedmt =
                 <a href={`/titulaciones/${habitual.slug}/`} class="enlace">
                   {habitual.corto}
                 </a>
+                {titulacionSinVerificar(tipo) && (
+                  <span class="block text-xs font-normal text-espuma-600">
+                    eslora máxima sin dato verificado: confírmalo con Capitanía
+                  </span>
+                )}
               </dd>
             </div>
             <div class="flex justify-between gap-4 border-b border-espuma-200 pb-3">
@@ -269,6 +281,11 @@ const iedmt =
               </dt>
               <dd class="text-right font-semibold text-mar-950">
                 {referencia.total ? textoRango(referencia.total) : 'Sin dato'}
+                {referencia.total && referencia.sinAmarre && (
+                  <span class="block text-xs font-normal text-espuma-600">
+                    sin amarre: no hay dato para esta eslora
+                  </span>
+                )}
               </dd>
             </div>
             <div class="flex justify-between gap-4">

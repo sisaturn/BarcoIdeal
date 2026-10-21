@@ -9,6 +9,7 @@ import { STORAGE_PREFIX } from '../config';
 import { PREGUNTAS, esRespuestaValida, type IdPregunta, type Respuestas } from '../data/preguntas';
 import { esTipoBarco, type IdTipoBarco } from '../data/tiposBarco';
 import { esAmarre, esPartida, esZona } from '../data/costes';
+import { esPuerto } from '../data/puertos';
 import { entradasPorDefecto, sanear, type Ajustes, type EntradasCalculo, type Rango } from './calculoCostes';
 
 const CLAVE_TEST = `${STORAGE_PREFIX}:test`;
@@ -117,6 +118,7 @@ export function validarCalculadora(dato: unknown): EstadoCalculadora | null {
       ...(esAmarre(e.amarre) && { amarre: e.amarre }),
       ...(numeroEn(e.eslora, 0, 1000) !== undefined && { eslora: e.eslora as number }),
       ...(modoAmarre && { modoAmarre }),
+      puerto: esPuerto(e.puerto) ? e.puerto : null,
       precioAmarreAnual: opcional(e.precioAmarreAnual, 0, 1e7),
       tarifaM2Dia: opcional(e.tarifaM2Dia, 0, 100),
       manga: opcional(e.manga, 0, 50),
@@ -192,6 +194,7 @@ export function urlCalculadora(entradas: Partial<EntradasCalculo>, diasUso?: num
   if (entradas.eslora !== undefined) params.set('eslora', String(entradas.eslora));
   if (entradas.zona) params.set('zona', entradas.zona);
   if (entradas.amarre) params.set('amarre', entradas.amarre);
+  if (entradas.puerto) params.set('puerto', entradas.puerto);
   if (entradas.horasMotor !== undefined && entradas.horasMotor !== null)
     params.set('horas', String(entradas.horasMotor));
   if (entradas.valor !== undefined && entradas.valor !== null) params.set('valor', String(entradas.valor));
@@ -209,6 +212,8 @@ export function entradasDesdeURL(search: string): { entradas: Partial<EntradasCa
   if (esZona(zona)) entradas.zona = zona;
   const amarre = params.get('amarre');
   if (esAmarre(amarre)) entradas.amarre = amarre;
+  const puerto = params.get('puerto');
+  if (esPuerto(puerto)) entradas.puerto = puerto;
   const numero = (clave: string) => {
     const v = params.get(clave);
     if (v === null || v.trim() === '') return undefined;

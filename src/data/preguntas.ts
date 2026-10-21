@@ -123,7 +123,8 @@ export const PREGUNTAS: Pregunta[] = [
       { valor: 'licencia', etiqueta: 'Licencia de navegación', detalle: 'Hasta 6 m, 2 millas y de día' },
       { valor: 'pnb', etiqueta: 'Patrón de Navegación Básica (PNB)' },
       { valor: 'per', etiqueta: 'Patrón de Embarcaciones de Recreo (PER)' },
-      { valor: 'py', etiqueta: 'Patrón de Yate o superior' },
+      { valor: 'py', etiqueta: 'Patrón de Yate (PY)' },
+      { valor: 'cy', etiqueta: 'Capitán de Yate (CY)' },
     ],
   },
   {

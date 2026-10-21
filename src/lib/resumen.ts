@@ -8,6 +8,7 @@ import { PARTIDAS, TIPOS_AMARRE, ZONAS } from '../data/costes';
 import type { EstadoCalculadora, EstadoTest } from './estado';
 import { euros, num } from './formato';
 import { textoRango } from './calculoCostes';
+import { puertoPorId } from '../data/puertos';
 
 export interface LineaResumen {
   etiqueta: string;
@@ -37,6 +38,7 @@ export function lineasCalculadora(c: EstadoCalculadora): LineaResumen[] {
     { etiqueta: 'Eslora', valor: `${num(e.eslora)} m` },
     { etiqueta: 'Zona', valor: ZONAS[e.zona]?.nombre ?? e.zona },
     { etiqueta: 'Dónde lo guarda', valor: TIPOS_AMARRE[e.amarre]?.nombre ?? e.amarre },
+    { etiqueta: 'Puerto', valor: puertoPorId(e.puerto ?? null)?.nombre ?? 'Sin elegir' },
     { etiqueta: 'Horas de motor', valor: e.horasMotor === null ? 'Sin indicar' : `${num(e.horasMotor, 0)} h/año` },
     { etiqueta: 'Valor del barco', valor: e.valor === null ? 'Sin indicar' : euros(e.valor) },
     { etiqueta: 'Coste anual orientativo (partidas con dato)', valor: `${textoRango(c.total)}/año` },

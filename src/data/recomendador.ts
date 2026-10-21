@@ -129,6 +129,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'uso',
     respuesta: 'paseo',
     puntos: {
+      'yate-lujo': 2,
+      superyate: 1,
       semirrigida: 3,
       'lancha-open': 3,
       'lancha-cabina': 2,
@@ -144,6 +146,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'uso',
     respuesta: 'pesca',
     puntos: {
+      'yate-lujo': -2,
+      superyate: -4,
       'lancha-open': 4,
       semirrigida: 3,
       'lancha-cabina': 3,
@@ -159,6 +163,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'uso',
     respuesta: 'vela',
     puntos: {
+      'yate-lujo': -5,
+      superyate: -5,
       'velero-pequeno': 4,
       'velero-crucero': 4,
       catamaran: 3,
@@ -174,6 +180,7 @@ export const REGLAS: Regla[] = [
     pregunta: 'uso',
     respuesta: 'deportes',
     puntos: {
+      'yate-lujo': 1,
       'moto-agua': 4,
       semirrigida: 3,
       'lancha-open': 3,
@@ -189,6 +196,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'uso',
     respuesta: 'travesias',
     puntos: {
+      'yate-lujo': 3,
+      superyate: 4,
       'velero-crucero': 4,
       catamaran: 3,
       'lancha-cabina': 3,
@@ -203,6 +212,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'uso',
     respuesta: 'vivir',
     puntos: {
+      'yate-lujo': 3,
+      superyate: 4,
       catamaran: 5,
       'velero-crucero': 4,
       'lancha-cabina': 2,
@@ -226,6 +237,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'zona',
     respuesta: 'atl',
     puntos: {
+      'yate-lujo': 1,
+      superyate: 1,
       'velero-crucero': 2,
       'lancha-cabina': 2,
       semirrigida: 1,
@@ -240,6 +253,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'zona',
     respuesta: 'can',
     puntos: {
+      'yate-lujo': 1,
+      superyate: 1,
       'velero-crucero': 2,
       catamaran: 2,
       semirrigida: 1,
@@ -253,13 +268,23 @@ export const REGLAS: Regla[] = [
   {
     pregunta: 'zona',
     respuesta: 'bal',
-    puntos: { catamaran: 2, 'velero-crucero': 2, 'lancha-cabina': 2, 'lancha-open': 1, semirrigida: 1 },
+    puntos: {
+      'yate-lujo': 2,
+      superyate: 2,
+      catamaran: 2,
+      'velero-crucero': 2,
+      'lancha-cabina': 2,
+      'lancha-open': 1,
+      semirrigida: 1,
+    },
     aFavor: 'En Baleares hay calas de sobra para fondear y pasar el día (o la noche) a bordo.',
   },
   {
     pregunta: 'zona',
     respuesta: 'int',
     puntos: {
+      'yate-lujo': -10,
+      superyate: -10,
       'velero-pequeno': 3,
       semirrigida: 2,
       'lancha-open': 2,
@@ -276,7 +301,15 @@ export const REGLAS: Regla[] = [
   {
     pregunta: 'personas',
     respuesta: '1-2',
-    puntos: { 'moto-agua': 3, 'velero-pequeno': 2, semirrigida: 2, 'lancha-open': 1, catamaran: -2 },
+    puntos: {
+      'yate-lujo': -4,
+      superyate: -6,
+      'moto-agua': 3,
+      'velero-pequeno': 2,
+      semirrigida: 2,
+      'lancha-open': 1,
+      catamaran: -2,
+    },
     aFavor: 'Para una o dos personas no necesitas más: menos gasto y más fácil de manejar.',
     enContra: 'Para una o dos personas es mucho barco: pagarás espacio que no usas.',
   },
@@ -284,6 +317,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'personas',
     respuesta: '3-4',
     puntos: {
+      'yate-lujo': -1,
+      superyate: -4,
       semirrigida: 2,
       'lancha-open': 2,
       'lancha-cabina': 2,
@@ -298,6 +333,7 @@ export const REGLAS: Regla[] = [
     pregunta: 'personas',
     respuesta: '5-6',
     puntos: {
+      'yate-lujo': 2,
       'lancha-open': 2,
       'lancha-cabina': 2,
       'velero-crucero': 2,
@@ -312,6 +348,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'personas',
     respuesta: '7+',
     puntos: {
+      'yate-lujo': 3,
+      superyate: 4,
       catamaran: 3,
       'lancha-cabina': 2,
       'velero-crucero': 1,
@@ -329,6 +367,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'dias',
     respuesta: '<15',
     puntos: {
+      'yate-lujo': -4,
+      superyate: -5,
       semirrigida: 1,
       'lancha-open': 1,
       'moto-agua': 1,
@@ -349,13 +389,28 @@ export const REGLAS: Regla[] = [
   {
     pregunta: 'dias',
     respuesta: '40-80',
-    puntos: { 'lancha-cabina': 1, 'velero-crucero': 1, catamaran: 1, 'velero-pequeno': 1 },
+    puntos: {
+      'yate-lujo': 1,
+      superyate: 1,
+      'lancha-cabina': 1,
+      'velero-crucero': 1,
+      catamaran: 1,
+      'velero-pequeno': 1,
+    },
     aFavor: 'Con un uso frecuente se aprovecha mejor un barco más completo.',
   },
   {
     pregunta: 'dias',
     respuesta: '80+',
-    puntos: { 'velero-crucero': 2, catamaran: 2, 'lancha-cabina': 1, 'velero-pequeno': 1, 'moto-agua': -1 },
+    puntos: {
+      'yate-lujo': 1,
+      superyate: 2,
+      'velero-crucero': 2,
+      catamaran: 2,
+      'lancha-cabina': 1,
+      'velero-pequeno': 1,
+      'moto-agua': -1,
+    },
     aFavor: 'Con tanto uso compensan la comodidad y un barco que aguante mucho trote.',
   },
 
@@ -363,7 +418,7 @@ export const REGLAS: Regla[] = [
   {
     pregunta: 'guardado',
     respuesta: 'puerto',
-    puntos: { 'velero-crucero': 2, catamaran: 2, 'lancha-cabina': 1, 'moto-agua': -1 },
+    puntos: { 'yate-lujo': 2, superyate: 3, 'velero-crucero': 2, catamaran: 2, 'lancha-cabina': 1, 'moto-agua': -1 },
     aFavor: 'Con amarre en puerto puedes tener un barco más grande y siempre listo para salir.',
     enContra: 'Tenerla en un amarre de puerto no suele compensar.',
   },
@@ -371,6 +426,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'guardado',
     respuesta: 'seca',
     puntos: {
+      'yate-lujo': -10,
+      superyate: -10,
       'lancha-open': 2,
       semirrigida: 2,
       'moto-agua': 2,
@@ -385,6 +442,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'guardado',
     respuesta: 'remolque',
     puntos: {
+      'yate-lujo': -10,
+      superyate: -10,
       semirrigida: 3,
       'moto-agua': 3,
       'velero-pequeno': 2,
@@ -403,6 +462,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'experiencia',
     respuesta: 'ninguna',
     puntos: {
+      'yate-lujo': -3,
+      superyate: -2,
       semirrigida: 2,
       'lancha-open': 2,
       'moto-agua': 1,
@@ -422,13 +483,13 @@ export const REGLAS: Regla[] = [
   {
     pregunta: 'experiencia',
     respuesta: 'media',
-    puntos: { 'lancha-cabina': 1, 'velero-crucero': 1 },
+    puntos: { 'yate-lujo': 1, 'lancha-cabina': 1, 'velero-crucero': 1 },
     aFavor: 'Con la experiencia que tienes puedes dar el salto a un barco más completo.',
   },
   {
     pregunta: 'experiencia',
     respuesta: 'mucha',
-    puntos: { 'velero-crucero': 1, catamaran: 1, 'lancha-cabina': 1 },
+    puntos: { 'yate-lujo': 1, superyate: 1, 'velero-crucero': 1, catamaran: 1, 'lancha-cabina': 1 },
     aFavor: 'Con tu experiencia le sacarás todo el partido.',
   },
 
@@ -437,6 +498,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'propulsion',
     respuesta: 'motor',
     puntos: {
+      'yate-lujo': 3,
+      superyate: 3,
       semirrigida: 3,
       'lancha-open': 3,
       'lancha-cabina': 3,
@@ -452,6 +515,8 @@ export const REGLAS: Regla[] = [
     pregunta: 'propulsion',
     respuesta: 'vela',
     puntos: {
+      'yate-lujo': -8,
+      superyate: -8,
       'velero-pequeno': 3,
       'velero-crucero': 3,
       catamaran: 3,
@@ -488,6 +553,20 @@ export const NOTAS: { pregunta: IdPregunta; respuesta: string; texto: string }[]
     respuesta: 'ninguna',
     texto:
       'Antes de comprar, sal unas cuantas veces en barcos de alquiler o de amigos: es la mejor forma de confirmar qué te gusta.',
+  },
+  // Sin precios de compra verificados el presupuesto no puntúa; en los tramos más altos solo se señalan
+  // las fichas de los yates grandes para que el usuario las compare.
+  {
+    pregunta: 'compra',
+    respuesta: '1000-3000',
+    texto:
+      'Con un presupuesto de 1 a 3 millones, mira también las fichas de «Yate de lujo» y «Superyate» en Tipos de barco. Aún no tenemos precios de compra verificados, así que el presupuesto no cambia la puntuación.',
+  },
+  {
+    pregunta: 'compra',
+    respuesta: '3000+',
+    texto:
+      'Con un presupuesto de más de 3 millones, mira también las fichas de «Yate de lujo» y «Superyate» en Tipos de barco. Aún no tenemos precios de compra verificados, así que el presupuesto no cambia la puntuación.',
   },
 ];
 

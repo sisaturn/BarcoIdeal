@@ -36,6 +36,8 @@ export interface CosteGuardado {
   total: Rango | null;
   /** Nombres de las partidas incluidas. */
   incluye: string[];
+  /** true si el amarre no tiene dato para esta eslora (el total es solo mantenimiento). */
+  sinAmarre: boolean;
 }
 
 /**
@@ -51,8 +53,17 @@ export function tablaCostes(tipo: TipoBarco): CosteGuardado[] {
       nombre: TIPOS_AMARRE[amarre].nombre,
       total: incluidas.length > 0 ? d.total : null,
       incluye: incluidas.map((p) => p.nombre.toLowerCase()),
+      sinAmarre: !incluidas.some((p) => p.id === 'amarre'),
     };
   });
+}
+
+/** true si la eslora típica del tipo supera la última eslora máxima con dato verificado (24 m). */
+export function titulacionSinVerificar(tipo: TipoBarco): boolean {
+  const maxima = Math.max(
+    ...LISTA_TITULACIONES.map((t) => esloraMaximaPara(t, tipo.propulsion)).filter((m): m is number => m !== null),
+  );
+  return tipo.eslora.tipica > maxima;
 }
 
 /** Coste anual parcial de referencia: la forma de guardarlo más habitual. */
@@ -78,6 +89,12 @@ export function notaTitulacion(tipo: TipoBarco): string[] {
     lineas.push(`Hasta ${num(max)} m${condicion}: ${t.nombre}.`);
     ultimoLimite = max;
     if (max >= tipo.eslora.max) break;
+  }
+  // Por encima de la última eslora con dato no se inventa la titulación: se dice que falta el dato.
+  if (ultimoLimite > 0 && tipo.eslora.max > ultimoLimite) {
+    lineas.push(
+      `Más de ${num(ultimoLimite)} m: los datos verificados no indican la eslora máxima de ninguna titulación de recreo. Confírmalo con la Capitanía Marítima.`,
+    );
   }
   return lineas;
 }

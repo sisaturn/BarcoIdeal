@@ -15,6 +15,7 @@ import { periodicidadPara, type Lista } from '../data/inspeccion';
 import { IVA_NUEVA } from '../data/impuestos';
 import type { IdFuente } from '../data/fuentes';
 import { TIPOS_BARCO, type IdTipoBarco } from '../data/tiposBarco';
+import { esPuerto, puertoPorId, tarifaPuertoPara } from '../data/puertos';
 import { euros, num } from './formato';
 
 /** Importe con incertidumbre. Un importe exacto tiene min === max. */
@@ -35,6 +36,8 @@ export interface EntradasCalculo {
   /** Solo informativa (ejemplos de la zona); no cambia las cifras. */
   zona: IdZona;
   amarre: IdAmarre;
+  /** Puerto o marina elegido (id de puertos.ts). null = sin elegir. */
+  puerto: string | null;
   /** Cómo se calcula el amarre en puerto o marina seca. */
   modoAmarre: ModoAmarre;
   /** Marina privada: precio anual que te dan (€). */
@@ -127,6 +130,7 @@ export function entradasPorDefecto(tipo: IdTipoBarco, parcial: Partial<EntradasC
     eslora: ficha.eslora.tipica,
     zona: 'med',
     amarre: ficha.guardado[0],
+    puerto: null,
     modoAmarre: 'rango',
     precioAmarreAnual: null,
     tarifaM2Dia: null,
@@ -147,6 +151,18 @@ export function entradasPorDefecto(tipo: IdTipoBarco, parcial: Partial<EntradasC
   };
 }
 
+/**
+ * Aplica el puerto elegido: guarda su id, pone su zona y, si se sabe cómo cobra, el modo de amarre
+ * (tarifa verificada o puerto público). Si no se sabe, se mantiene el modo actual.
+ * id null o desconocido = quitar el puerto.
+ */
+export function conPuerto(e: EntradasCalculo, id: string | null): EntradasCalculo {
+  const p = puertoPorId(id);
+  if (!p) return { ...e, puerto: null };
+  const modoAmarre: ModoAmarre = p.tarifa ? 'privada' : (p.gestion ?? e.modoAmarre);
+  return { ...e, puerto: p.id, zona: p.zona, modoAmarre };
+}
+
 /** Normaliza las entradas para que nunca haya valores absurdos o NaN. */
 export function sanear(e: EntradasCalculo): EntradasCalculo {
   const def = entradasPorDefecto(e.tipo);
@@ -160,6 +176,7 @@ export function sanear(e: EntradasCalculo): EntradasCalculo {
     valor: numeroOpcional(e.valor, LIMITES.valor),
     tarifaM2Dia: numeroOpcional(e.tarifaM2Dia, LIMITES.tarifaM2Dia),
     precioAmarreAnual: numeroOpcional(e.precioAmarreAnual, LIMITES.precioAmarreAnual),
+    puerto: esPuerto(e.puerto) ? e.puerto : null,
     numMotores: Number.isFinite(e.numMotores) ? limitar(Math.round(e.numMotores), 1, 4) : 1,
   };
 }
@@ -187,18 +204,34 @@ function calcularAmarre(e: EntradasCalculo): Calculo {
   const iva = e.ivaAmarre ? 1 + IVA_NUEVA.tipo : 1;
   const textoIva = e.ivaAmarre ? ' IVA (21 %) incluido.' : ' Sin IVA ni tasas.';
 
+  const puerto = puertoPorId(e.puerto);
+
   if (e.modoAmarre === 'privada') {
+    // Sin precio escrito por el usuario, se usa la tarifa verificada del puerto elegido (si la hay).
+    const tarifa =
+      e.precioAmarreAnual === null ? tarifaPuertoPara(puerto, e.eslora, TIPOS_BARCO[e.tipo].propulsion) : null;
+    if (tarifa && puerto) {
+      let explicacion = `Tarifa anual de ${puerto.nombre} para ${num(tarifa.eslora)} m.`;
+      if (e.eslora < tarifa.eslora) explicacion += ` Usamos la fila de ${num(tarifa.eslora)} m de su tabla.`;
+      return {
+        estimado: exacto(tarifa.euros * iva),
+        explicacion: explicacion + textoIva,
+        fuentes: [tarifa.fuente],
+      };
+    }
     if (e.precioAmarreAnual === null) {
       return {
         estimado: null,
         explicacion: 'Marina privada: precio anual cerrado según la eslora.',
-        sinDato: 'Escribe la tarifa anual que te da tu marina.',
+        sinDato: puerto
+          ? `No tenemos la tarifa verificada de ${puerto.nombre} para esta eslora: consúltala en su web y escríbela.`
+          : 'Escribe la tarifa anual que te da tu marina.',
         fuentes,
       };
     }
     return {
       estimado: exacto(e.precioAmarreAnual * iva),
-      explicacion: `Tarifa anual de tu marina.${textoIva}`,
+      explicacion: `Tarifa anual de ${puerto ? puerto.nombre : 'tu marina'}.${textoIva}`,
       fuentes,
     };
   }
@@ -208,7 +241,7 @@ function calcularAmarre(e: EntradasCalculo): Calculo {
       return {
         estimado: null,
         explicacion: 'Puerto público: €/m²/día × eslora × manga × 365 días.',
-        sinDato: 'Escribe la tarifa por m² y día de tu puerto y la manga del barco.',
+        sinDato: `Escribe la tarifa por m² y día de ${puerto ? puerto.nombre : 'tu puerto'} y la manga del barco.`,
         fuentes,
       };
     }
